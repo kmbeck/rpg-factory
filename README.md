@@ -7,4 +7,10 @@ The SOP is a system that will load desired SO data into memory at runtime. These
 ## Enum-Based (For Now..)
 Many of the core components of the RPG system are defined using enums. This includes things like what Character Stats and Attributes exist in the game, what equipment slots are available in the game, what types of items and equipment there are, etc. Modifying these basic enums will change what options are available to you when creating more complex objects like equipment, spells, etc.
 
+## 'Universal' UI Kit
+Eventually there should be a set of prefabs and scripts that provide a foundation for an UI system that has the following features:
+1. Simple bordered windows that can be resized and recolored during runtime.
+2. Basic UI and Text animations.
+3. Dynamically generate certain UIs based on SO data or other game data...
+
 ## More...
