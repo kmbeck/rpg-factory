@@ -8,19 +8,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName="NewStatBlock",menuName="Scriptable Objects/StatBlock")]
 public class SOStatBlock : ScriptableObject
 {
-    // Core Attributes.
-    public int core_str;
-    public int core_con;
-    public int core_dex;
-    public int core_wis;
-    public int core_int;
-    public int core_cha;
+    public List<CharStat> stats;
+}
 
-    // Attribute Modifiers.
-    public int mod_str;
-    public int mod_con;
-    public int mod_dex;
-    public int mod_wis;
-    public int mod_int;
-    public int mod_cha;
+public enum CharStat {
+    HP,
+    MANA,
+    STRENGTH,
+    SPEED,
+    WILL
 }
