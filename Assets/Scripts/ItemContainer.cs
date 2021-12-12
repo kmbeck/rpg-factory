@@ -67,9 +67,9 @@ public class ItemContainer : ItemEquipment
  * things.
  * * * * */
 public enum StorageType {
-    NONE,       // No slot / no available slot.    
-    UNIVERSAL,  // Can hold anything.
-    ITEM,       // Can only hold items (not equipment)
-    AMMO,       // Can only hold ammo.
-    SPECIFIC,   // Only holds specific items.
+    NONE        = 0,    // No slot / no available slot.    
+    UNIVERSAL   = 1,    // Can hold anything.
+    ITEM        = 2,    // Can only hold items (not equipment)
+    AMMO        = 3,    // Can only hold ammo.
+    SPECIFIC    = 4,    // Only holds specific items.
 }

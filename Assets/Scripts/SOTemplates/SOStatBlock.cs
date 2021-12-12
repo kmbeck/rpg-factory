@@ -12,9 +12,9 @@ public class SOStatBlock : ScriptableObject
 }
 
 public enum CharStat {
-    HP,
-    MANA,
-    STRENGTH,
-    SPEED,
-    WILL
+    HP          = 0,
+    MANA        = 1,
+    STRENGTH    = 2,
+    SPEED       = 3,
+    WILL        = 4
 }

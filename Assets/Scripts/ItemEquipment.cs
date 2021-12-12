@@ -34,34 +34,34 @@ public class ItemEquipment : ItemInventory
 
 // General categores of equipment.
 public enum EquipType {
-    WEAPON,     // 1h weapons
-    WEAPON2H,   // 2h weapons
-    SHIELD,     // all shields
-    ARMOR,      // all armor & clothes
-    TRINKET,    // all rings,amulets,accessories
-    AMMO,       // all bolts, bullets, arrows
-    CONTAINER   // all bags, pouches, etc.
+    WEAPON     = 0,   // 1h weapons
+    WEAPON2H   = 1,   // 2h weapons
+    SHIELD     = 2,   // all shields
+    ARMOR      = 3,   // all armor & clothes
+    TRINKET    = 4,   // all rings,amulets,accessories
+    AMMO       = 5,   // all bolts, bullets, arrows
+    CONTAINER  = 6,   // all bags, pouches, etc.
 }
 
 // List of equipment slots that exist across all characters
 // in the game.
 public enum EquipSlot {
-    NONE,
-    HEAD,
-    HANDS,
-    CHEST,
-    LEGS,
-    FEET,
-    HAND_1,     // Held
-    HAND_2,     // Held
-    TRINKET_1,
-    TRINKET_2,
-    TRINKET_3,
-    TRINKET_4,
-    BAG,        // Storage
-    BELT,       // Storage
-    PACK_1,     // Extra Storage
-    PACK_2,     // Extra Storage
-    PACK_3,     // Extra Storage
-    PACK_4,     // Extra Storage
+    NONE        = 0,
+    HEAD        = 1,
+    HANDS       = 2,
+    CHEST       = 3,
+    LEGS        = 4,
+    FEET        = 5,
+    HAND_1      = 6,    // Held
+    HAND_2      = 7,    // Held
+    TRINKET_1   = 8,
+    TRINKET_2   = 9,
+    TRINKET_3   = 10,
+    TRINKET_4   = 11,
+    BAG         = 12,   // Storage
+    BELT        = 13,   // Storage
+    PACK_1      = 14,   // Extra Storage
+    PACK_2      = 15,   // Extra Storage
+    PACK_3      = 16,   // Extra Storage
+    PACK_4      = 17,   // Extra Storage
 }

@@ -16,12 +16,19 @@ public class SOStatMod : ScriptableObject
     public bool stackable;
     [Tooltip("How many times can this effect stack?")]
     public int maxStackSize;
+
+    [Header("Interactions With Other StatMods")]
+    [Tooltip("When this mod is applied, reduce the stack count of these mods from the character.")]
+    public List<SOStatMod> reduceMods; 
+    [Tooltip("When this mod is applied, remove these mods from the character.")]
+    public List<SOStatMod> overwriteMods;
+    [Tooltip("This mod cannot be applied if one of these exists on the character.")]
+    public List<SOStatMod> incompatableMods;
 }
 
 public enum Operator {
-    ADD, MULTIPLY, SET
+    ADD = 0, MULTIPLY = 1, SET = 2
 }
-
 
 /* TODO: ObjLib currently requires template type to be descendant of ItemOrigin
    should this be changed to something more generic so a StatMod object could
