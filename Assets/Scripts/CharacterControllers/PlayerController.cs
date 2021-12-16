@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void testInit() {
-        ItemContainer bag = ObjLibManager.libItemContainer.GetCopy<ItemContainer>("TestBackpack");
+        ItemContainer bag = SODB.libItemContainer.GetInstance<ItemContainer>("TestBackpack");
         bag.gameObject.name = "InitTestBackpack";
         bag.Initialize();
         em.equip(bag);

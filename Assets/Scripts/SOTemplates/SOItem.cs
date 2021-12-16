@@ -6,11 +6,8 @@ using UnityEngine;
  * Parent for all Items.
  * * * * */
  [CreateAssetMenu(fileName="NewItem", menuName="Scriptable Objects/Item")]
-public class SOItem : ScriptableObject
+public class SOItem : SOOrigin
 {
-    public string uniqueID;
-    public string displayName;
-
     [Header("Equipment Values")]
     [Tooltip("What type of equipment is this?")]
     public EquipType equipType;

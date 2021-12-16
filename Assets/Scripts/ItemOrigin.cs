@@ -6,7 +6,7 @@ using UnityEngine;
  * Parent of all 'Item' classes. 
  *      T should be an SOItem, SOItem, etc.
  * * * * */
-public abstract class ItemOrigin : MonoBehaviour
+public class ItemOrigin : ObjectOrigin<SOItem>
 {
-    public SOItem data;
+
 }

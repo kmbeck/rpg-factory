@@ -56,15 +56,14 @@ public class DebugMenu_Player : MonoBehaviour
         equipScrollView = GUI.BeginScrollView(
             new Rect(pad * 2, currentLineY + lineHeight * 2, 200f, 300f), 
             equipScrollView, 
-            new Rect(0,0,200f-pad*4f,ObjLibManager.libItemEquipment.lib.Count * lineHeight)
+            new Rect(0,0,200f-pad*4f,SODB.libItemEquipment.lib.Count * lineHeight)
         );
 
         // Populate Equipment Scroll View.
         int idx = 0;
-        foreach (string key in ObjLibManager.libItemEquipment.lib.Keys)  {
+        foreach (string key in SODB.libItemEquipment.lib.Keys)  {
             if (GUI.Button(new Rect(pad, (lineHeight + 5f) * idx, 200f-pad*4f,lineHeight), key)) {
-                //Debug.Log(key);
-                pc.im.addItem(ObjLibManager.libItemEquipment.GetCopy<ItemInventory>(key));
+                pc.im.addItem(SODB.libItemEquipment.GetInstance<ItemInventory>(key));
             }
             idx++;
         }
@@ -108,14 +107,14 @@ public class DebugMenu_Player : MonoBehaviour
         itemScrollView = GUI.BeginScrollView(
             new Rect(screenWidth/2f + pad/2f, currentLineY + lineHeight * 2, 200f, 300f),
             itemScrollView,
-            new Rect(0f,0f,200f-pad*4f,ObjLibManager.libItemInventory.lib.Count * lineHeight)
+            new Rect(0f,0f,200f-pad*4f,SODB.libItemInventory.lib.Count * lineHeight)
         );
 
         // Populate Item Scroll View.
         idx=0;
-        foreach (string key in ObjLibManager.libItemInventory.lib.Keys) {
+        foreach (string key in SODB.libItemInventory.lib.Keys) {
             if (GUI.Button(new Rect(pad, (lineHeight + 5f) * idx, 200f-pad*4f,lineHeight), key)) {
-                pc.im.addItem(ObjLibManager.libItemInventory.GetCopy<ItemInventory>(key));
+                pc.im.addItem(SODB.libItemInventory.GetInstance<ItemInventory>(key));
             }
             idx++;
         }

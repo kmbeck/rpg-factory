@@ -19,3 +19,6 @@ MonoBehaviour:
   value: 0.75
   stackable: 1
   maxStackSize: 3
+  overwriteMods: []
+  reduceMods: []
+  incompatableMods: []

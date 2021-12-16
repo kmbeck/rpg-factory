@@ -27,7 +27,7 @@ public class ItemContainer : ItemEquipment
         }
     }
 
-    // Remove item from container. Returns removed item as GameObject.
+    // Remove item from container. Returns removed item as ItemInventory.
     public ItemInventory removeItem(int slotKey) {
         ItemInventory retval = data.items[slotKey];
         data.items[slotKey] = null;

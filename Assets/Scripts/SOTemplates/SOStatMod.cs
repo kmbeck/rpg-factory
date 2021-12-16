@@ -18,10 +18,10 @@ public class SOStatMod : ScriptableObject
     public int maxStackSize;
 
     [Header("Interactions With Other StatMods")]
-    [Tooltip("When this mod is applied, reduce the stack count of these mods from the character.")]
-    public List<SOStatMod> reduceMods; 
     [Tooltip("When this mod is applied, remove these mods from the character.")]
     public List<SOStatMod> overwriteMods;
+    [Tooltip("Instead of applying this mod, reduce the stack count of these mods if they are present.")]
+    public List<SOStatMod> reduceMods; 
     [Tooltip("This mod cannot be applied if one of these exists on the character.")]
     public List<SOStatMod> incompatableMods;
 }
@@ -34,4 +34,9 @@ public enum Operator {
    should this be changed to something more generic so a StatMod object could
    also be generated into an ObjLib (all it would need is a 'data' field...).
    Create new object type named 'DynamicObject' or something where all of these
-   types can descend from??? */
+   types can descend from??? 
+   
+   A generic class that can take any descendant of Scriptable Object and store it in
+   a dictionary.
+    ---> a descendant of this class that can use a prefab to us SO to instantiate objects...
+   */
