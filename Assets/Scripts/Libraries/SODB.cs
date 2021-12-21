@@ -11,8 +11,7 @@ public class SODB : MonoBehaviour
     public static SOLib<SOItem> libItemContainer;
     public static SOLib<SOItem> libItemEquipment;
     public static SOLib<SOItem> libItemInventory;
-    //public static SOLib<SOStatEffect> libStatEffect;
-    //public static SOLib<SOStatMod> libStatMod;
+    public static SOFlagLib<SOFlag> libFlag;
 
     private static TextAsset objMetadataJSON;
     private static JObject objMetadata;
@@ -51,6 +50,11 @@ public class SODB : MonoBehaviour
         libItemInventory = new SOLib<SOItem>();
         libItemInventory.LoadLib(objMetadata["ItemInventory"]["default_so_dir"].ToString());
         Debug.Log($"Generated {libItemInventory.lib.Count} ItemInventory Objects.");
+
+        // * * * * * Flags * * * * *
+        libFlag = new SOFlagLib<SOFlag>();
+        libFlag.LoadLib(objMetadata["SOFlag"]["default_so_dir"].ToString());
+        Debug.Log($"Loaded {libFlag.lib.Count} Flag Objects.");
     }
 
     // Loads the ObjectMetadata.json file and parses it into a JObject.
