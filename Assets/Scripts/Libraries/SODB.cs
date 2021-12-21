@@ -11,6 +11,8 @@ public class SODB : MonoBehaviour
     public static SOLib<SOItem> libItemContainer;
     public static SOLib<SOItem> libItemEquipment;
     public static SOLib<SOItem> libItemInventory;
+    //public static SOLib<SOStatEffect> libStatEffect;
+    //public static SOLib<SOStatMod> libStatMod;
 
     private static TextAsset objMetadataJSON;
     private static JObject objMetadata;

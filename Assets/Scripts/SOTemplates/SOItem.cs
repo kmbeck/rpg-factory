@@ -5,7 +5,7 @@ using UnityEngine;
 /* * * * *
  * Parent for all Items.
  * * * * */
- [CreateAssetMenu(fileName="NewItem", menuName="Scriptable Objects/Item")]
+[CreateAssetMenu(fileName="NewItem", menuName="Scriptable Objects/Item")]
 public class SOItem : SOOrigin
 {
     [Header("Equipment Values")]

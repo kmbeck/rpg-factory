@@ -4,6 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/* * * * *
+ * Parent class for all ScriptableObject Libraries. Will use data found in
+ * ObjectMetadata.json to load a directory of ScriptableObjects into a 
+ * dictionary where every SO is defined by a unique ID (string).
+ * Note: GetInstance<O> allows for a single SO to be used to instantiate many
+ *   different types of prefabs.
+ * * * * */
+
 public class SOLib<D>
 where D : SOOrigin
 {

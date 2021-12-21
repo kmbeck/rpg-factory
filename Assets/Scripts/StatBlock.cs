@@ -5,8 +5,4 @@ using UnityEngine;
 public class StatBlock
 {
     public SOStatBlock data;
-
-    void Start() {
-        
-    }
 }
