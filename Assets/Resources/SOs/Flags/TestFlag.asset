@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6219076bcc746aa2281f893cf8edca69, type: 3}
   m_Name: TestFlag
   m_EditorClassIdentifier: 
-  uniqueID: 
+  uniqueID: TestFlag
   displayName: 
-  activeDataType: 0
-  iVal: 0
+  dataType: 0
+  iVal: -1000000
   sVal: 
   bVal: 0
-  fVal: 0
+  fVal: -1000000

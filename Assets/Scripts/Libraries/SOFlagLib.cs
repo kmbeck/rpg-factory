@@ -68,22 +68,23 @@ where D : SOFlag
 
     public int GetFlagIVal(string id) {
         int val = lib[id].iVal;
-        if (val == SOFlag.I_DEFAULT) {
-            Debug.Log($"Warning: Get made on Flag {id} returning default value.");
-        }
-        else if (lib[id].dataType != FlagDataType.INT) {
+        if (lib[id].dataType != FlagDataType.INT) {
             Debug.Log($"Warning: Get on int value from Flag {id}, but FlagDataType = {lib[id].dataType.ToString()}.");
         }
+        else if (val == SOFlag.I_DEFAULT) {
+            Debug.Log($"Warning: Get made on Flag {id} returning default value.");
+        }
+
         return val;
     }
 
-    public string GetFlatSVal(string id) {
+    public string GetFlagSVal(string id) {
         string val = lib[id].sVal;
-        if (val == SOFlag.S_DEFAULT) {
-            Debug.Log($"Warning: Get made on Flag {id} returning default value.");
-        }
-        else if (lib[id].dataType != FlagDataType.STRING) {
+        if (lib[id].dataType != FlagDataType.STRING) {
             Debug.Log($"Warning: Get on string value from Flag {id}, but FlagDataType = {lib[id].dataType.ToString()}.");
+        }
+        else if (val == SOFlag.S_DEFAULT) {
+            Debug.Log($"Warning: Get made on Flag {id} returning default value.");
         }
         return val;
     }
@@ -99,11 +100,11 @@ where D : SOFlag
 
     public float GetFlagFVal(string id) {
         float val = lib[id].fVal;
-        if (val == SOFlag.F_DEFAULT) {            
-            Debug.Log($"Warning: Get made on Flag {id} returning default value.");
-        }
-        else if (lib[id].dataType != FlagDataType.FLOAT) {
+        if (lib[id].dataType != FlagDataType.FLOAT) {
             Debug.Log($"Warning: Get on float value from Flag {id}, but FlagDataType = {lib[id].dataType.ToString()}");
+        }
+        else if (val == SOFlag.F_DEFAULT) {            
+            Debug.Log($"Warning: Get made on Flag {id} returning default value.");
         }
         return val;
     }

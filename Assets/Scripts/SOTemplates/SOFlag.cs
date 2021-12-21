@@ -8,13 +8,13 @@ public class SOFlag : SOOrigin
     [Tooltip("Tells the game which value below should be used for this Flag.")]
     public FlagDataType dataType;
     [Tooltip("Integer value. Default = -1000000")]
-    public int iVal;
+    public int iVal = -1000000;
     [Tooltip("String value. Default = \"\"")]
-    public string sVal;
+    public string sVal = "";
     [Tooltip("Boolean value. Default = false")]
-    public bool bVal;
+    public bool bVal = false;
     [Tooltip("Float value. Default = -1000000.0")]
-    public float fVal;
+    public float fVal = -1000000.0f;
 
     public static int I_DEFAULT = -1000000;
     public static string S_DEFAULT = "";

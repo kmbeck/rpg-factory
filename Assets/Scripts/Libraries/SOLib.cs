@@ -51,4 +51,8 @@ where D : SOOrigin
         newInstance.GetComponent<O>().data = data;
         return newInstance.GetComponent<O>();
     }
+
+    // public D GetReference(string key) {
+    //     return lib[key];
+    // }
 } 
