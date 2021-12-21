@@ -13,5 +13,10 @@
         "default_so_type":"SOItem",
         "default_so_dir":"SOs/Items",
         "default_prefab_fp":"Prefabs/ItemPrefab"
+    },
+    "SOFlag": {
+        "default_so_type":"SOFlag",
+        "default_so_dir":"SOs/Flags",
+        "default_prefab_fp":null
     }
 }
