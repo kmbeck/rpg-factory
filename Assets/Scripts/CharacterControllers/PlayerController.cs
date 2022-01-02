@@ -24,7 +24,6 @@ public class PlayerController : MonoBehaviour
     private void testInit() {
         ItemContainer bag = SODB.libItemContainer.GetInstance<ItemContainer>("TestBackpack");
         bag.gameObject.name = "InitTestBackpack";
-        bag.data.displayName = "hahahaha im fucked";
         bag.Initialize();
         em.equip(bag);
         // TODO: better way to do this than dict search every time we want to

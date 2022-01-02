@@ -1,18 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 public class EventEditorGUI : EditorWindow
 {
-    // Window code.
-    void OnGUI() {
-        GUILayout.Label("Unique ID: ",EditorStyles.boldLabel);
-        string inUniqueID = EditorGUILayout.TextField("Name", "Unique ID");
-    }
+    public VisualTreeAsset uxml;
 
     [MenuItem("Window/Event Editor")]
-    public static void ShowWindow() {
-        EditorWindow.GetWindow<EventEditorGUI>("Event Editor");
+    public static void ShowExample()
+    {
+        EventEditorGUI wnd = GetWindow<EventEditorGUI>();
+        wnd.titleContent = new GUIContent("Event Editor");
+    }
+
+    public void CreateGUI()
+    {
+        // Each editor window contains a root VisualElement object
+        VisualElement root = rootVisualElement;
+
+        uxml.CloneTree(root);
     }
 }
