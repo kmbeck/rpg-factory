@@ -1,0 +1,26 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="container_TopElements" style="margin-top: 3px; margin-left: 3px; margin-right: 3px; margin-bottom: 3px;">
+        <ui:TextField picking-mode="Ignore" label="Unique ID:" name="tf_UniqueID" max-length="1000" password="false" readonly="false" style="-unity-font-style: bold;" />
+        <ui:TextField picking-mode="Ignore" label="Trigger Flag ID:" name="tf_FlagTrigger" max-length="1000" password="false" readonly="false" style="-unity-font-style: bold;" />
+        <ui:Toggle label="Parallel:" name="chk_Parallel" style="-unity-font-style: bold;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="container_LowerElements" style="flex-direction: row-reverse; width: 100%; margin-top: 20px; flex-grow: 1;">
+        <ui:VisualElement name="container_EventListView" style="height: auto; margin-top: 0; margin-bottom: 0; align-items: stretch; flex-direction: column; margin-left: 0; margin-right: 0; width: 30%;">
+            <ui:Label text="Event Library:" display-tooltip-when-elided="true" name="lbl_EventList" style="margin-left: 3px; padding-right: 0; padding-left: 0; margin-top: 0; -unity-font-style: bold;" />
+            <ui:VisualElement name="container_EditorFooterButtonsRight" style="align-items: flex-start; flex-direction: row; justify-content: space-around; margin-bottom: 3px;">
+                <ui:Button text="Load" display-tooltip-when-elided="true" name="btn_Load" tooltip="Checks for common errors in Event Script." style="width: 35%; align-items: flex-start; min-height: 16px;" />
+                <ui:Button text="Refresh" display-tooltip-when-elided="true" name="btn_Refresh" tooltip="Checks for common errors in Event Script." style="width: 35%; align-items: flex-start; min-height: 16px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="container_ScriptEditor" style="width: 70%; flex-grow: 1;">
+            <ui:Label text="Event Script:" display-tooltip-when-elided="true" name="lbl_EventScript" style="margin-left: 3px; padding-right: 0; padding-left: 0; margin-top: 0; -unity-font-style: bold;" />
+            <ui:ScrollView show-vertical-scroller="false" name="scroll_TextEditorScroller" style="bottom: auto; height: auto; margin-right: 3px; margin-bottom: 3px; -unity-text-outline-width: 0; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(15, 17, 17); border-right-color: rgb(15, 17, 17); border-top-color: rgb(15, 17, 17); border-bottom-color: rgb(15, 17, 17); flex-grow: 1;">
+                <ui:TextField picking-mode="Ignore" name="tf_EventScript" password="false" multiline="true" tabindex="0" style="justify-content: flex-start; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; top: auto; right: auto; position: relative; height: auto; -unity-background-image-tint-color: rgb(255, 255, 255); bottom: auto; white-space: normal; -unity-text-outline-width: 0; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0); max-height: none; min-height: 300px; width: auto; padding-right: 2px; -unity-font: resource(&apos;Fonts/SourceCodePro-Regular&apos;); font-size: 14px; -unity-font-style: normal; padding-left: 2px; padding-top: 0; padding-bottom: 2px; flex-shrink: 1; flex-grow: 1;" />
+            </ui:ScrollView>
+            <ui:VisualElement name="container_EditorFooterButtons" style="align-items: flex-start; flex-direction: row; justify-content: space-around; margin-bottom: 3px;">
+                <ui:Button text="Save" display-tooltip-when-elided="true" name="btn_SaveScript" tooltip="Save Event Script text to a .rfes file." style="width: 35%; align-items: flex-start; min-height: 16px;" />
+                <ui:Button text="Validate" display-tooltip-when-elided="true" name="btn_ValidateScript" tooltip="Checks for common errors in Event Script." style="width: 35%; align-items: flex-start; min-height: 16px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

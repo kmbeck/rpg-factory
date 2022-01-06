@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class SODB : MonoBehaviour
 {
     public static SODB inst;
@@ -11,6 +12,7 @@ public class SODB : MonoBehaviour
     public static SOLib<SOItem> libItemContainer;
     public static SOLib<SOItem> libItemEquipment;
     public static SOLib<SOItem> libItemInventory;
+    public static SOLib<SOEvent> libEvent;
     public static SOFlagLib<SOFlag> libFlag;
 
     private static TextAsset objMetadataJSON;
@@ -33,9 +35,19 @@ public class SODB : MonoBehaviour
         return objMetadata[typeName][field].ToString();
     }
 
+    // Same as InitLib() but refreshes event lib ONLY.
+    public static void InitEventLib() {      
+        LoadObjDataJSON();
+
+        // * * * * * Events * * * * *
+        libEvent = new SOLib<SOEvent>();
+        libEvent.LoadLib(objMetadata["SOEvent"]["default_so_dir"].ToString());
+        Debug.Log($"Generated {libEvent.lib.Count} Event Objects.");
+    }
+
     // Load the ObjectMetadata.json file and use it to generate a library for all
     // desired ScriptableObject data.
-    private static void InitLibs() {
+    public static void InitLibs() {
         LoadObjDataJSON();
 
         // * * * * * Item Container * * * * *
@@ -50,6 +62,11 @@ public class SODB : MonoBehaviour
         libItemInventory = new SOLib<SOItem>();
         libItemInventory.LoadLib(objMetadata["ItemInventory"]["default_so_dir"].ToString());
         Debug.Log($"Generated {libItemInventory.lib.Count} ItemInventory Objects.");
+
+        // * * * * * Events * * * * *
+        libEvent = new SOLib<SOEvent>();
+        libEvent.LoadLib(objMetadata["SOEvent"]["default_so_dir"].ToString());
+        Debug.Log($"Generated {libEvent.lib.Count} Event Objects.");
 
         // * * * * * Flags * * * * *
         libFlag = new SOFlagLib<SOFlag>();

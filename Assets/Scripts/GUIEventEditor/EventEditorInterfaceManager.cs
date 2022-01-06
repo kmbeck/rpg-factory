@@ -21,14 +21,14 @@ public class EventEditorInterfaceManager : MonoBehaviour
         Debug.Log($"{methods.Length} functions found in EventInterface.");
         foreach(MethodInfo m in methods) {
 
-            // PRINT METHOD NAME
-            Debug.Log($"\t{m.Name}");
+            // // PRINT METHOD NAME
+            // Debug.Log($"\t{m.Name}");
 
-            // GET ALL PARAMETER DATA & PRINT "NAME, TYPE"
-            ParameterInfo[] pars = m.GetParameters();
-            foreach(ParameterInfo p in pars) {
-                Debug.Log($"\t{p.Name}, {p.ParameterType}");
-            }
+            // // GET ALL PARAMETER DATA & PRINT "NAME, TYPE"
+            // ParameterInfo[] pars = m.GetParameters();
+            // foreach(ParameterInfo p in pars) {
+            //     Debug.Log($"\t{p.Name}, {p.ParameterType}");
+            // }
         }
 
         //TODO: sort paramters by Name -> Paramter names -> Paramter types...
