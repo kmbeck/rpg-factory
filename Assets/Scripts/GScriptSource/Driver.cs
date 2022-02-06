@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Driver : MonoBehaviour
 {
-
     string TEST_STATEMENT_A = "PRINT_MSG_TO_CONSOLE(\"Test Message.\")";
 
     string TEST_STATEMENT_B = "int a = 10\n    int b = 11\n    int c = (a + b) * b";
@@ -16,7 +15,10 @@ public class Driver : MonoBehaviour
     {
         GScriptCompiler compiler = new GScriptCompiler();
         List<Token> tokens = compiler.tokenize(TEST_STATEMENT_B);
-        DebugDisplayTokens(tokens);
+        List<Statement> program = compiler.parse(tokens.ToArray());
+        foreach (Statement s in program) {
+            Debug.Log(s.ToString());
+        }
     }
 
     public void DebugDisplayTokens(List<Token> tokens) {
