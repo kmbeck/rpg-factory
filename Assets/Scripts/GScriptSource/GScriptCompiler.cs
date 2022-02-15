@@ -40,8 +40,6 @@ public class GScriptCompiler
     // Regex for finding BOOL LITERALS
     Regex rxBool = new Regex("(true|false)");
 
-    // TODO: Define order of operations.
-
     const string KEY_IF = "if";
     const string KEY_WHILE = "while";
     const string KEY_WAIT = "wait";
@@ -267,11 +265,7 @@ public class GScriptCompiler
                 while (inputChars[idx + 1] != '\"') {   // Break out before closing "
                     idx++;
                     buf += inputChars[idx];
-                    // Check to ensure we havent reached end of input.
                     // TODO: throw error if end of input encountered here or wait until later?
-                    // if (idx + 1 >= inputChars.Length) {
-                    //     break;
-                    // }
                 }
                 // Push closing "
                 // TODO: rule where end of string must be located on the same line?

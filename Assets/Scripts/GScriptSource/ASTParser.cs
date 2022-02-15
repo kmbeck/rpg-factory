@@ -12,13 +12,14 @@ public class ASTParser {
     private LexContext context;
     private int idx;        // Current index of the token list.
     private Token[] tokens;
+    private Token start;    // The token that the pack starts with 
     private Token cur;      // The token we are looking at.
     private Token next;     // The token after cur.
     private List<Statement> program;
     private ExprNode curExpr;   // The last expression returned by parseExpr().
 
     public ASTParser() {
-        
+
     }
 
     // Parse a list of tokens into an AST and return.
@@ -27,10 +28,11 @@ public class ASTParser {
         idx = -1;
         tokens = _tokens;
         program = new List<Statement>();
-        while (idx < tokens.Length - 1) {
+        //eatTokens();    // Set up token pointers for first pass.
+        next = tokens[0];
+        while (!reachedEOF()) {
             Statement s = parseStatement();
             program.Add(s);
-            break;
         }
         return program;
     }
@@ -38,13 +40,12 @@ public class ASTParser {
     // Parses and returns a statement.
     public Statement parseStatement() {
         // Eat first token of statment.
-        eatTokens();
-        if (cur.type == TType.KEY_IF) {
+        if (next.type == TType.KEY_IF) {
             Statement s = new Statement(SType.IF);
             // Parse the conditional expr for the if statement.
             // (this should start with the '(' token...)
             eatTokens();
-            s.expr = parseExpression();
+            s.expr = parseAndGetExpression();
 
             // Get ready to read child statements of the current if statement.
             eatEOS();
@@ -60,12 +61,12 @@ public class ASTParser {
             context.popScope();
             return s;
         }
-        else if (cur.type == TType.KEY_WHILE) {
+        else if (next.type == TType.KEY_WHILE) {
             Statement s = new Statement(SType.WHILE);
             // Parse the conditional expr for the while statement.
             // (this should start with the '(' token...)
             eatTokens();
-            s.expr = parseExpression();
+            s.expr = parseAndGetExpression();
 
             // Get ready to read child statements of the current while statement.
             eatEOS();
@@ -81,66 +82,78 @@ public class ASTParser {
             context.popScope();
             return s;
         }
-        else if (cur.type == TType.KEY_WAIT) {
+        else if (next.type == TType.KEY_WAIT) {
             Statement s = new Statement(SType.WAIT);
             eatTokens();
-            s.expr = parseExpression();
+            s.expr = parseAndGetExpression();
             eatEOS();
             return s;
         }
-        else if (cur.type == TType.KEY_BOOL ||
-                 cur.type == TType.KEY_INT ||
-                 cur.type == TType.KEY_FLOAT ||
-                 cur.type == TType.KEY_STR) {
+        else if (next.type == TType.KEY_BOOL ||
+                 next.type == TType.KEY_INT ||
+                 next.type == TType.KEY_FLOAT ||
+                 next.type == TType.KEY_STR) {
             Statement s = new Statement(SType.VAR_DEF);
-            s.expr = parseExpression();
+            s.expr = parseAndGetExpression();
             eatEOS();
             return s;
         }
         else {
             Statement s = new Statement(SType.EXPR);
-            while (next.type)
-            s.expr = parseExpression();
+            s.expr = parseAndGetExpression();
             eatEOS();
             return s;
         }
         return null;
     }
 
-    // Parse and return an expression. Assumes idx is pointing to the first
-    // token in the expression (excluding any '[]'s or '()'s.)
-    public ExprNode parseExpression() {
+    // Wrapper for parseExpression that also returns the value of curExpr.
+    private ExprNode parseAndGetExpression() {
+        while(next.type != TType.WS_NEWLINE && !reachedEOF()) {
+            parseExpression();
+        }
+        ExprNode rootExpr = curExpr.getRoot();
+        Debug.Log(rootExpr.ToString());
+        return rootExpr;
+    }
+
+    // Parses an expression and updates the value of curExpression. 
+    // Assumes idx is pointing to the first token in the expression 
+    // (excluding any '[]'s or '()'s.)
+    private void parseExpression() {
+        // Dont eat token on first statement...
         eatTokens();
+
         // Return if we are at the end of the token stream.
         if (cur.type == TType.IDENTIFIER) {
             ExprNode identExpr = new ExprNode(EType.IDENTIFIER);
             identExpr.value = cur.value;
+            curExpr = identExpr;
             //TODO: Check if the identifier exists within the current scope?
             if (next.type == TType.L_PAREN) {
                 ExprNode expr = new ExprNode(EType.FUNCTION);
-                expr.children.Add(identExpr);
-                eatTokens();
+                expr.addChild(identExpr);
+                eatTokens();    // Eat up to opening '('
                 context.pdepth++;
-                expr.children.Add(parseExpression());    // Read params for function call.
+                while(next.type != TType.R_PAREN) {
+                    parseExpression();
+                }
+                expr.addChild(curExpr);
                 eatTokens();
                 context.pdepth--;
                 curExpr = expr;
-                return expr;
             }
             else if (next.type == TType.L_BRACKET) {
                 ExprNode expr = new ExprNode(EType.INDEXING);
-                expr.children.Add(identExpr);
+                expr.addChild(identExpr);
                 eatTokens();
                 context.bdepth++;
-                expr.children.Add(parseExpression());   // Read index value.
+                parseExpression();
+                expr.addChild(curExpr);   // Read index value.
                 context.bdepth--;
                 curExpr = expr;
-                return expr;
             }
-            // Return new IdentifierExpr by default.
-            // TODO: can condense all return statements into single fall-through return statement...
-            curExpr = identExpr;
-            return identExpr;
+            //return;
         }
         // All literal expressions.
         else if (cur.type == TType.INT_LITERAL  ||
@@ -151,7 +164,6 @@ public class ASTParser {
             expr.tType = cur.type;
             expr.value = cur.value;
             curExpr = expr;
-            return expr;
         }
         // All binary expressions.
         else if (cur.type == TType.OP_ASSIGNMENT     || 
@@ -171,47 +183,73 @@ public class ASTParser {
             ExprNode expr = new ExprNode(EType.BINARY);
             expr.tType = cur.type;
             //Check if 'curExpr' has higher or lower precidence.
-            if (curExpr != null && curExpr.eType == EType.BINARY) {
-                if ((int)curExpr.tType >= (int)expr.tType) {
-                    expr.children.Add(curExpr);
-                    expr.children.Add(parseExpression());
+            if (curExpr != null) {
+                // If curExpr is binary expr, add it based on operator precedence.
+                // TODO: curExpr will not always point back to the last binary expression read?
+                //      - Somehow curExpr.children[0] not kept in expression for 'else' case...
+                if (curExpr.eType == EType.BINARY) {
+                    if ((int)curExpr.tType <= (int)expr.tType) {
+                        expr.addChild(curExpr);
+                        parseExpression();
+                        expr.addChild(curExpr);
+                    }
+                    else {
+                        ExprNode temp = curExpr.children[1];
+                        curExpr.children.RemoveAt(1);
+                        curExpr.addChild(expr);
+                        expr.addChild(temp);
+                        parseExpression();
+                        expr.addChild(curExpr);
+                    }
                 }
+                // Otherwise add curExpr as left-hand value.
                 else {
-                    ExprNode temp = curExpr.children[1];
-                    expr.children.Add(temp);
-                    expr.children.Add(parseExpression());
-                    curExpr.children[1] = expr;
+                    expr.addChild(curExpr);
+                    parseExpression();
+                    expr.addChild(curExpr);
                 }
             }
             curExpr = expr;
-            return expr;
         }
         // All unary expressions. 
         else if (cur.type == TType.OP_NEGATION ||
                  cur.type == TType.OP_INVERSE) {
             ExprNode expr = new ExprNode(EType.UNARY);
             expr.tType = cur.type;
-            expr.children.Add(parseExpression());
+            expr.addChild(parseAndGetExpression());
             curExpr = expr;
-            return expr;
         }
-        // '(' and ')' encountered outside of a function call expression.
+        // '(' and ')' encountered (other than a function call expression).
         else if (cur.type == TType.L_PAREN) {
+            //ExprNode expr = new ExprNode(EType.EXPRESION);
             context.pdepth++;
             while (cur.type != TType.R_PAREN) {
-                curExpr = parseExpression();
+                parseExpression();
             }
-            context.pdepth--;
-            return curExpr;
+            return;
         }
-        return null;
+        else if (cur.type == TType.R_PAREN) {
+            context.pdepth--;
+            return;
+        }
+
+        // Check if we have reached end of a statement...
+        if ((next.type == TType.WS_NEWLINE && !context.enclosed()) || reachedEOF()) {
+            return;
+        }
     }
     
     // Iterate idx by num and update cur and next.
     private void eatTokens(int num=1) {
+        // if we are at end of token stream, point cur and next to last token & return.
         if (idx + num >= tokens.Length) {
+            idx = tokens.Length - 1;
+            cur = tokens[idx];
+            next = tokens[idx];
+            Debug.Log($"[[{idx.ToString()}/{tokens.Length-1}]] Type: {cur.type.ToString()}, Val: {cur.value}  ->  Type: {next.type.ToString()}, Val: {next.value}");
             return;
         }
+
         idx += num;
         cur = tokens[idx];
 
@@ -222,15 +260,16 @@ public class ASTParser {
         else {
             next = tokens[tokens.Length - 1];
         }
-        Debug.Log($"Type: {cur.type.ToString()}, Val: {cur.value}  ->  Type: {next.type.ToString()}, Val: {next.value}");
+        Debug.Log($"[[{idx.ToString()}/{tokens.Length-1}]] Type: {cur.type.ToString()}, Val: {cur.value}  ->  Type: {next.type.ToString()}, Val: {next.value}");
     }
 
     // Eats tokens after a statement has ended up until the start of the next
     // statement. Updates context.tdepth value.
     private void eatEOS() {
         int tcount = 0;
-        while(next.type == TType.WS_NEWLINE && next.type == TType.WS_TAB && !reachedEOF()) {
+        while((next.type == TType.WS_NEWLINE || next.type == TType.WS_TAB) && !reachedEOF()) {
             eatTokens();
+            //TODO: CHANGE TO NEXT?
             if (cur.type == TType.WS_TAB) {
                 tcount++;
             }
@@ -246,9 +285,14 @@ public class ASTParser {
         }
     }
 
+    // Returns next token in token stream without incrementing.
+    private Token peek() {
+        return tokens[idx + 1];
+    }
+
     // Have we reached the end of the file?
     private bool reachedEOF() {
-        return idx == tokens.Length - 1 ? true : false;
+        return idx >= tokens.Length - 1;
     }
 }
 
@@ -308,6 +352,15 @@ public class LexContext {
 public struct Scope {
     public List<Token> vars;
     public bool hasVar(Token token) { return vars.Contains(token); }
+    public void addVar(Token token) {
+        if (!hasVar(token)) {
+            addVar(token);
+        }
+        else {
+            //TODO: throw error?
+            Debug.Log($"Var: {token.value} already exists in scope!");
+        }
+    }
 }
 
 // One statement in the program (line or block)
@@ -338,17 +391,34 @@ public class Statement {
 }
 
 // One Node in an Expression Tree.
+// TODO: add pdepth/bdepth values for expressions?
 public class ExprNode {
     public string value;            // Used by Identifiers to denote name and Literals to denote value.
     public EType eType;             // The type of expression this is.
     public TType tType;             // The type of token associated with this expr.
     public List<ExprNode> children; // Child expressions of this expression.
+    public ExprNode parent;         // Node of this node.
 
     public ExprNode(EType exprType) {
         value = "";
         eType = exprType;
         tType = TType.NONE;
         children = new List<ExprNode>();
+        parent = null;
+    }
+
+    public void addChild(ExprNode child) {
+        children.Add(child);
+        child.parent = this;
+    }
+
+    // Iterate through parents to find root node of this expression.
+    public ExprNode getRoot() {
+        ExprNode cur = this;
+        while (cur.parent != null) {
+            cur = parent;
+        }
+        return cur;
     }
 
     // Gives us a string representation of the expression depending on it's EType.

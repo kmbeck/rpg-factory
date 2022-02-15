@@ -6,7 +6,7 @@ public class Driver : MonoBehaviour
 {
     string TEST_STATEMENT_A = "PRINT_MSG_TO_CONSOLE(\"Test Message.\")";
 
-    string TEST_STATEMENT_B = "int a = 10\n    int b = 11\n    int c = (a + b) * b";
+    string TEST_STATEMENT_B = "int a = 10\nint b = 11\nint c = (a + b) * b";
 
     string TEST_STATEMENT_C = "if (a == b)\n\tSET_FLAG(\"Flag Name\", 1)";
 
@@ -14,7 +14,7 @@ public class Driver : MonoBehaviour
     void Start()
     {
         GScriptCompiler compiler = new GScriptCompiler();
-        List<Token> tokens = compiler.tokenize(TEST_STATEMENT_B);
+        List<Token> tokens = compiler.tokenize(TEST_STATEMENT_C);
         List<Statement> program = compiler.parse(tokens.ToArray());
         foreach (Statement s in program) {
             Debug.Log(s.ToString());
