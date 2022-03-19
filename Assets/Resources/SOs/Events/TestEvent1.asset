@@ -16,4 +16,13 @@ MonoBehaviour:
   displayName: 
   triggerFlagUniqueID: 
   parallel: 0
-  script: "# This event is a test event.\nPRINT_MSG_TO_CONSOLE\n    \"Begin!\""
+  script: 'int a = 10
+
+    int b = 20
+
+    int c = (a + b) * b
+
+    string test_msg
+    = "This is a test message!"
+
+    PRINT_MSG_TO_CONSOLE(test_msg)'

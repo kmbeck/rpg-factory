@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -9,11 +10,15 @@ public class SODB : MonoBehaviour
 {
     public static SODB inst;
 
-    public static SOLib<SOItem> libItemContainer;
-    public static SOLib<SOItem> libItemEquipment;
-    public static SOLib<SOItem> libItemInventory;
-    public static SOLib<SOEvent> libEvent;
-    public static SOFlagLib<SOFlag> libFlag;
+    // The libraries in the Data Base.
+    // NOTE: It is NECISSARY to have these variable names start with 'lib'
+    //      and be the ONLY variables in this class that start with 'lib'
+    //      so the sketchy code reflection will work correctly!!!
+    public static SOLib<SOItem> LIB_ITEM_CONTAINER;
+    public static SOLib<SOItem> LIB_ITEM_EQUIPMENT;
+    public static SOLib<SOItem> LIB_ITEM_INVENTORY;
+    public static SOLib<SOEvent> LIB_EVENT;
+    public static SOFlagLib<SOFlag> LIB_FLAG;
 
     private static TextAsset objMetadataJSON;
     private static JObject objMetadata;
@@ -26,8 +31,24 @@ public class SODB : MonoBehaviour
         }
         else {
             inst = this;
-            InitLibs();
+            Initialize();
         }
+    }
+
+    void Awake()
+    {
+        if (inst != null) {
+            Destroy(this);
+        }
+        else {
+            inst = this;
+            Initialize();
+        }
+    }
+
+    public void Initialize() {
+        // Initialize & load all of our libraries.
+        InitLibs();
     }
 
     // Get field in objMetadata at [typeName],[field].
@@ -40,9 +61,9 @@ public class SODB : MonoBehaviour
         LoadObjDataJSON();
 
         // * * * * * Events * * * * *
-        libEvent = new SOLib<SOEvent>();
-        libEvent.LoadLib(objMetadata["SOEvent"]["default_so_dir"].ToString());
-        Debug.Log($"Generated {libEvent.lib.Count} Event Objects.");
+        LIB_EVENT = new SOLib<SOEvent>();
+        LIB_EVENT.LoadLib(objMetadata["SOEvent"]["default_so_dir"].ToString());
+        Debug.Log($"Generated {LIB_EVENT.lib.Count} Event Objects.");
     }
 
     // Load the ObjectMetadata.json file and use it to generate a library for all
@@ -51,27 +72,25 @@ public class SODB : MonoBehaviour
         LoadObjDataJSON();
 
         // * * * * * Item Container * * * * *
-        libItemContainer = new SOLib<SOItem>();
-        libItemContainer.LoadLib(objMetadata["ItemContainer"]["default_so_dir"].ToString());
-        Debug.Log($"Generated {libItemContainer.lib.Count} ItemContainer Objects.");
+        LIB_ITEM_CONTAINER = new SOLib<SOItem>();
+        LIB_ITEM_CONTAINER.LoadLib(objMetadata["ItemContainer"]["default_so_dir"].ToString());
+        Debug.Log($"Generated {LIB_ITEM_CONTAINER.lib.Count} ItemContainer Objects.");
         // * * * * * Item Equipment * * * * *
-        libItemEquipment = new SOLib<SOItem>();
-        libItemEquipment.LoadLib(objMetadata["ItemEquipment"]["default_so_dir"].ToString());
-        Debug.Log($"Generated {libItemEquipment.lib.Count} EquipmentPrefab Objects.");
+        LIB_ITEM_EQUIPMENT = new SOLib<SOItem>();
+        LIB_ITEM_EQUIPMENT.LoadLib(objMetadata["ItemEquipment"]["default_so_dir"].ToString());
+        Debug.Log($"Generated {LIB_ITEM_EQUIPMENT.lib.Count} EquipmentPrefab Objects.");
         // * * * * * Item Inventory * * * * *
-        libItemInventory = new SOLib<SOItem>();
-        libItemInventory.LoadLib(objMetadata["ItemInventory"]["default_so_dir"].ToString());
-        Debug.Log($"Generated {libItemInventory.lib.Count} ItemInventory Objects.");
-
+        LIB_ITEM_INVENTORY = new SOLib<SOItem>();
+        LIB_ITEM_INVENTORY.LoadLib(objMetadata["ItemInventory"]["default_so_dir"].ToString());
+        Debug.Log($"Generated {LIB_ITEM_INVENTORY.lib.Count} ItemInventory Objects.");
         // * * * * * Events * * * * *
-        libEvent = new SOLib<SOEvent>();
-        libEvent.LoadLib(objMetadata["SOEvent"]["default_so_dir"].ToString());
-        Debug.Log($"Generated {libEvent.lib.Count} Event Objects.");
-
+        LIB_EVENT = new SOLib<SOEvent>();
+        LIB_EVENT.LoadLib(objMetadata["SOEvent"]["default_so_dir"].ToString());
+        Debug.Log($"Generated {LIB_EVENT.lib.Count} Event Objects.");
         // * * * * * Flags * * * * *
-        libFlag = new SOFlagLib<SOFlag>();
-        libFlag.LoadLib(objMetadata["SOFlag"]["default_so_dir"].ToString());
-        Debug.Log($"Loaded {libFlag.lib.Count} Flag Objects.");
+        LIB_FLAG = new SOFlagLib<SOFlag>();
+        LIB_FLAG.LoadLib(objMetadata["SOFlag"]["default_so_dir"].ToString());
+        Debug.Log($"Loaded {LIB_FLAG.lib.Count} Flag Objects.");
     }
 
     // Loads the ObjectMetadata.json file and parses it into a JObject.
@@ -79,5 +98,25 @@ public class SODB : MonoBehaviour
         //TODO: Validate JSON!!!
         objMetadataJSON = Resources.Load("ObjectMetadata", typeof(TextAsset)) as TextAsset;
         objMetadata = JObject.Parse(objMetadataJSON.text);
+    }
+
+    // Returns the name of all defined libs in this class as a list of strings & returns.
+    // Used by ASTParser to help poplate it's global variables before parsing.
+    public ScopeVar[] getContextualizedLibValues() {
+        // Get a list of all public static vars in SODB.
+        FieldInfo[] sodbFields = typeof(SODB).GetFields(BindingFlags.Public|BindingFlags.Static|BindingFlags.DeclaredOnly);
+
+        // Identify vars that start with 'lib' and
+        // TODO: use regex to check for libs not just 'lib'?
+        //      better/more flexible solution?
+        List<ScopeVar> newIdentifiers = new List<ScopeVar>();
+        foreach(FieldInfo f in sodbFields) {
+            if(f.Name.Substring(0,3).ToUpper() == "LIB") {
+                // /newIdentifiers.Add(new Token(TType.IDENTIFIER, f.Name.ToUpper()));
+                // TODO: how to load these? VType should not be NONE probably...
+                newIdentifiers.Add(new ScopeVar(f.Name.ToUpper(), VType.NONE));
+            }
+        }
+        return newIdentifiers.ToArray();
     }
 }

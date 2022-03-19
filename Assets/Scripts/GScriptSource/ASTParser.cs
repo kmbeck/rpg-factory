@@ -51,14 +51,12 @@ public class ASTParser {
             eatEOS();
             context.tdepth++;
             s.tdepth = context.tdepth;
-            context.pushScope();
 
             // While we have not broken out of this if block, read in child statements.
             while(context.tdepth >= s.tdepth) {
                 s.children.Add(parseStatement());
                 eatEOS();
             }
-            context.popScope();
             return s;
         }
         else if (next.type == TType.KEY_WHILE) {
@@ -72,14 +70,12 @@ public class ASTParser {
             eatEOS();
             context.tdepth++;
             s.tdepth = context.tdepth;
-            context.pushScope();
 
             // While we have not broken out of this while block, read in child statements.
             while(context.tdepth >= s.tdepth) {
                 s.children.Add(parseStatement());
                 eatEOS();
             }
-            context.popScope();
             return s;
         }
         else if (next.type == TType.KEY_WAIT) {
@@ -94,6 +90,20 @@ public class ASTParser {
                  next.type == TType.KEY_FLOAT ||
                  next.type == TType.KEY_STR) {
             Statement s = new Statement(SType.VAR_DEF);
+            switch (next.type) {
+                case TType.KEY_BOOL:
+                    s.varDefVType = VType.BOOL;
+                    break;
+                case TType.KEY_INT:
+                    s.varDefVType = VType.INT;
+                    break;
+                case TType.KEY_FLOAT:
+                    s.varDefVType = VType.FLOAT;
+                    break;
+                case TType.KEY_STR:
+                    s.varDefVType = VType.STRING;
+                    break;
+            }
             s.expr = parseAndGetExpression();
             eatEOS();
             return s;
@@ -109,9 +119,11 @@ public class ASTParser {
 
     // Wrapper for parseExpression that also returns the value of curExpr.
     private ExprNode parseAndGetExpression() {
+        //TODO: new line check only relevant if we are not enclosed by () or []
         while(next.type != TType.WS_NEWLINE && !reachedEOF()) {
             parseExpression();
         }
+        curExpr.lineNum = cur.location[1];
         ExprNode rootExpr = curExpr.getRoot();
         Debug.Log(rootExpr.ToString());
         return rootExpr;
@@ -129,7 +141,6 @@ public class ASTParser {
             ExprNode identExpr = new ExprNode(EType.IDENTIFIER);
             identExpr.value = cur.value;
             curExpr = identExpr;
-            //TODO: Check if the identifier exists within the current scope?
             if (next.type == TType.L_PAREN) {
                 ExprNode expr = new ExprNode(EType.FUNCTION);
                 expr.addChild(identExpr);
@@ -153,7 +164,14 @@ public class ASTParser {
                 context.bdepth--;
                 curExpr = expr;
             }
-            //return;
+            else if (next.type == TType.OP_ASSIGNMENT) {
+                ExprNode expr = new ExprNode(EType.BINARY);
+                expr.tType = TType.OP_ASSIGNMENT;
+                expr.addChild(curExpr);
+                parseExpression();
+                expr.addChild(curExpr);
+                curExpr = expr;
+            }
         }
         // All literal expressions.
         else if (cur.type == TType.INT_LITERAL  ||
@@ -163,6 +181,20 @@ public class ASTParser {
             ExprNode expr = new ExprNode(EType.LITERAL);
             expr.tType = cur.type;
             expr.value = cur.value;
+            switch (cur.type) {
+                case TType.INT_LITERAL:
+                    expr.vType = VType.INT;
+                    break;
+                case TType.STR_LITERAL:
+                    expr.vType = VType.STRING;
+                    break;
+                case TType.BOOL_LITERAL:
+                    expr.vType = VType.BOOL;
+                    break;
+                case TType.FLOAT_LITERAL:
+                    expr.vType = VType.FLOAT;
+                    break;
+            }
             curExpr = expr;
         }
         // All binary expressions.
@@ -182,11 +214,10 @@ public class ASTParser {
                  cur.type == TType.OP_COMMA) { 
             ExprNode expr = new ExprNode(EType.BINARY);
             expr.tType = cur.type;
-            //Check if 'curExpr' has higher or lower precidence.
             if (curExpr != null) {
                 // If curExpr is binary expr, add it based on operator precedence.
-                // TODO: curExpr will not always point back to the last binary expression read?
-                //      - Somehow curExpr.children[0] not kept in expression for 'else' case...
+                // TODO: After child expressions are read, make sure they evaluate to the
+                //      correct type???
                 if (curExpr.eType == EType.BINARY) {
                     if ((int)curExpr.tType <= (int)expr.tType) {
                         expr.addChild(curExpr);
@@ -269,7 +300,6 @@ public class ASTParser {
         int tcount = 0;
         while((next.type == TType.WS_NEWLINE || next.type == TType.WS_TAB) && !reachedEOF()) {
             eatTokens();
-            //TODO: CHANGE TO NEXT?
             if (cur.type == TType.WS_TAB) {
                 tcount++;
             }
@@ -278,7 +308,7 @@ public class ASTParser {
             }
         }
         if (tcount > context.tdepth) {
-            // Error too many tabs
+            // TODO: Throw error: too many tabs!
         }
         else {
             context.tdepth = tcount;
@@ -296,6 +326,8 @@ public class ASTParser {
     }
 }
 
+//TODO: Keep track of current 'position' in LexContext while parsing so we can store
+//  the value when we throw error messages.
 /* * * * *
  * This keeps track of the 'context' while we are parsing the script.
  *  - \t, (), and [] counters
@@ -305,10 +337,8 @@ public class LexContext {
     public int pdepth;
     public int bdepth;
     public int tdepth;
-    private List<Scope> scopes;
 
     public LexContext() {
-        scopes = new List<Scope>();
         pdepth = 0;
         bdepth = 0;
         tdepth = 0;
@@ -321,46 +351,6 @@ public class LexContext {
         }
         return false;
     }
-
-    // Push a new Scope.
-    public void pushScope() {
-        scopes.Add(new Scope());
-    }
-
-    // Pop a Scope.
-    public void popScope() {
-        scopes.RemoveAt(scopes.Count-1);
-    }
-
-    // Add a variable to the current Scope.
-    public void addVar(Token token) {
-        scopes[scopes.Count-1].vars.Add(token); 
-    }
-
-    // Check if the var exists in the current context.
-    public bool hasVar(Token token) {
-        foreach(Scope s in scopes) {
-            if (s.hasVar(token)) {
-                return true;
-            }
-        }
-        return false;
-    }
-}
-
-// Keeps track of what variables are defined in the current scope.
-public struct Scope {
-    public List<Token> vars;
-    public bool hasVar(Token token) { return vars.Contains(token); }
-    public void addVar(Token token) {
-        if (!hasVar(token)) {
-            addVar(token);
-        }
-        else {
-            //TODO: throw error?
-            Debug.Log($"Var: {token.value} already exists in scope!");
-        }
-    }
 }
 
 // One statement in the program (line or block)
@@ -370,11 +360,15 @@ public class Statement {
     public List<Statement> children;
     public int tdepth;
 
+    // Only used in VAR_DEF statements. Tells us what type the new var should be.
+    public VType varDefVType;
+
     public Statement(SType _type) {
         type = _type;
         expr = null;
         children = new List<Statement>();
         tdepth = 0;
+        varDefVType = VType.NONE;
     }
 
     public override string ToString()
@@ -398,6 +392,8 @@ public class ExprNode {
     public TType tType;             // The type of token associated with this expr.
     public List<ExprNode> children; // Child expressions of this expression.
     public ExprNode parent;         // Node of this node.
+    public VType vType;             // The type that this expression should ultimately evaluate to.
+    public int lineNum;          // The line number in the original source code this exprssion is found on.
 
     public ExprNode(EType exprType) {
         value = "";
@@ -412,13 +408,50 @@ public class ExprNode {
         child.parent = this;
     }
 
-    // Iterate through parents to find root node of this expression.
+    // Iterate through parents to find root node of this Expression.
     public ExprNode getRoot() {
         ExprNode cur = this;
         while (cur.parent != null) {
             cur = parent;
         }
         return cur;
+    }
+
+    // Recurses through the expression after it has been successfully parsed.
+    // TODO: what do we do for expressions that do not return a type? Set vType no none?
+    //      Assignment operator should always be at the root if is in an expression???
+    //      EXPRS that can have multiple types on either side of it???
+    public void traverse(ExprNode expr) {
+        foreach(ExprNode childExpr in expr.children) {
+            traverse(childExpr);
+        }
+        // If this expression is a LITERAL, determine the vType.
+        if (expr.eType == EType.LITERAL) {
+            if (expr.vType == VType.NONE) {
+                // Assign appropriate VType to the LITERAL.
+                switch(expr.tType) {
+                    case TType.INT_LITERAL:
+                        expr.vType = VType.INT;
+                        break;
+                    case TType.STR_LITERAL:
+                        expr.vType = VType.STRING;
+                        break;
+                    case TType.FLOAT_LITERAL:
+                        expr.vType = VType.FLOAT;
+                        break;
+                    case TType.BOOL_LITERAL:
+                        expr.vType = VType.BOOL;
+                        break;
+                }
+            }
+            return;
+        }
+        // If this expresion still needs a vType, try to read it's vType from it's children?
+        if (expr.vType == VType.NONE) {
+            foreach(ExprNode childExpr in expr.children) {
+                //if (childExpr.vType != VType.NONE)
+            }
+        }
     }
 
     // Gives us a string representation of the expression depending on it's EType.
@@ -471,5 +504,14 @@ public enum EType {
     INDEXING,
     BINARY,
     UNARY,
+    NONE
+}
+
+// Enum defines data types of VALUES of Expressions.
+public enum VType {
+    BOOL,
+    INT,
+    FLOAT,
+    STRING,
     NONE
 }

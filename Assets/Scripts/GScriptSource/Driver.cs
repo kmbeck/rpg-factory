@@ -8,17 +8,16 @@ public class Driver : MonoBehaviour
 
     string TEST_STATEMENT_B = "int a = 10\nint b = 11\nint c = (a + b) * b";
 
-    string TEST_STATEMENT_C = "if (a == b)\n\tSET_FLAG(\"Flag Name\", 1)";
+    string TEST_STATEMENT_C = "if (a = b)\n\tSET_FLAG(\"Flag Name\", 1)";
 
     // Start is called before the first frame update
     void Start()
     {
         GScriptCompiler compiler = new GScriptCompiler();
-        List<Token> tokens = compiler.tokenize(TEST_STATEMENT_C);
-        List<Statement> program = compiler.parse(tokens.ToArray());
-        foreach (Statement s in program) {
-            Debug.Log(s.ToString());
-        }
+        compiler.validate(TEST_STATEMENT_C);
+        // foreach (Statement s in program) {
+        //     Debug.Log(s.ToString());
+        // }
     }
 
     public void DebugDisplayTokens(List<Token> tokens) {

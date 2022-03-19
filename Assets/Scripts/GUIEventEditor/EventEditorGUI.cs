@@ -30,6 +30,7 @@ public class EventEditorGUI : EditorWindow
 
         // Register callbacks.
         root.Q<Button>("btn_SaveScript").clicked += onSaveClicked;
+        root.Q<Button>("btn_ValidateScript").clicked += onValidateClicked;
         root.Q<Button>("btn_Load").clicked += onLoadClicked;
         root.Q<Button>("btn_Refresh").clicked += updateEventLibraryView;
 
@@ -50,6 +51,12 @@ public class EventEditorGUI : EditorWindow
         updateEventLibraryView();
     }
 
+    // Validate the current contents of the Event Script text field.
+    public void onValidateClicked() {
+        GScriptCompiler compiler = new GScriptCompiler();
+        compiler.validate(root.Q<TextField>("tf_EventScript").value);
+    }
+
     public void onLoadClicked() {
         if (root.Q<ListView>("listview_EventLibrary") == null) {
             return;
@@ -57,8 +64,8 @@ public class EventEditorGUI : EditorWindow
 
         string selectedVal = (root.Q<ListView>("listview_EventLibrary").selectedItem.ToString());
 
-        if (SODB.libEvent.lib.ContainsKey(selectedVal)) {
-            SOEvent evt = SODB.libEvent.lib[selectedVal];
+        if (SODB.LIB_EVENT.lib.ContainsKey(selectedVal)) {
+            SOEvent evt = SODB.LIB_EVENT.lib[selectedVal];
             root.Q<TextField>("tf_UniqueID").value = evt.uniqueID;
             root.Q<TextField>("tf_FlagTrigger").value = evt.triggerFlagUniqueID;
             root.Q<Toggle>("chk_Parallel").value = evt.parallel;
