@@ -135,7 +135,8 @@ public class ASTParser {
         }
         curExpr.lineNum = cur.location[1];
         ExprNode rootExpr = curExpr.getRoot();
-        Debug.Log(rootExpr.ToString());
+        // Debug print all expressions in their own msg.
+        //Debug.Log(rootExpr.ToString());
         return rootExpr;
     }
 

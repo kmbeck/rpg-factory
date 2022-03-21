@@ -78,12 +78,19 @@ public class GScriptCompiler
 
     // Used by traverse() to ensure all variables are used correctly.
     private VarContext context;
+    private GScriptExceptionHandler exceptions;
 
     // Validate the input string of code.
     public void validate(string program) {
         List<Token> tokens = tokenize(program);
         List<Statement> statements = parse(tokens.ToArray());
         traverse(statements);
+        if (!exceptions.empty()) {
+            exceptions.printAllExceptions();
+        }
+        else {
+            Debug.Log("Script validated successfully!");
+        }
     }
 
     // Convert input into a list of Tokens.
@@ -300,11 +307,11 @@ public class GScriptCompiler
             idx++;
             xLoc++;
         }
-        string temp = "";
-        foreach (Token t in tokens) {
-            temp += t.ToString() + "|";
-        }
-        Debug.Log(temp);
+        // string temp = "";
+        // foreach (Token t in tokens) {
+        //     temp += t.ToString() + "|";
+        // }
+        // Debug.Log(temp);
         return tokens;
     }
 
@@ -322,10 +329,11 @@ public class GScriptCompiler
         List<string> errors = new List<string>();
         Scope scope = new Scope();
         context = new VarContext();
+        exceptions = new GScriptExceptionHandler();
         foreach(Statement s in program) {
             traverseStatement(s);
         }
-        Debug.Log(context.ToString());
+        //Debug.Log(context.ToString());
     }
 
     // Traverse a Statement and all of its child Statements & Expressions
@@ -370,7 +378,7 @@ public class GScriptCompiler
         traverseExpr(s.expr);
         if (s.expr.vType != VType.BOOL) {
             // ERROR: if statement does not have a boolean expression.
-            Debug.Log($"Error ({s.expr.lineNum}): if statement argument must be a bool expression.");
+            exceptions.log($"Error (ln: {s.expr.lineNum}): if statement argument must be a bool expression.");
         }
     }
 
@@ -381,7 +389,7 @@ public class GScriptCompiler
         }
         // Check to ensure var does not already exist in scope...
         if (s.varDefVType != s.expr.children[1].vType) {
-            Debug.Log($"Error ({s.expr.lineNum}): cannot assign {s.expr.children[1].vType.ToString()} to {s.varDefVType.ToString()} value.");
+            exceptions.log($"Error (ln: {s.expr.lineNum}): cannot assign {s.expr.children[1].vType.ToString()} to {s.varDefVType.ToString()} value.");
         }
         else {
             // Add new var to context.
@@ -393,7 +401,7 @@ public class GScriptCompiler
         traverseExpr(s.expr);
         if (s.expr.vType != VType.INT && s.expr.vType != VType.FLOAT) {
             // ERROR: wait statement requires int or float expression.
-            Debug.Log($"Error ({s.expr.lineNum}): wait statement argument must be an int or float expression.");
+            exceptions.log($"Error (ln: {s.expr.lineNum}): wait statement argument must be an int or float expression.");
         }
     }
 
@@ -401,7 +409,7 @@ public class GScriptCompiler
         traverseExpr(s.expr);
         if (s.expr.vType != VType.BOOL) {
             // ERROR: while statement does not have a boolean expression.
-            Debug.Log($"Error ({s.expr.lineNum}): while statement argument must be a bool expression.");
+            exceptions.log($"Error (ln: {s.expr.lineNum}): while statement argument must be a bool expression.");
         }
     }
 
@@ -450,12 +458,12 @@ public class GScriptCompiler
             if (e.children[0].vType != VType.INT   && 
                 e.children[0].vType != VType.FLOAT &&
                 e.children[0].vType != VType.STRING) {
-                Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                exceptions.log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
-                Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                exceptions.log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_SUBTRACTION    ||
@@ -466,42 +474,42 @@ public class GScriptCompiler
                  e.tType == TType.OP_LESS           ||
                  e.tType == TType.OP_LESSOREQUAL) {
             if (e.children[0].vType != VType.INT && e.children[0].vType != VType.FLOAT) {
-                Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                exceptions.log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
-                Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                exceptions.log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_AND || e.tType == TType.OP_OR) {
             if (e.children[0].vType != VType.BOOL) {
-                Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                exceptions.log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
-                Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                exceptions.log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_EQUALITY || e.tType == TType.OP_NOTEQUALS) {
             if (e.children[0].vType != e.children[1].vType) {
-                Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                exceptions.log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_ASSIGNMENT) {
             if (e.children[0].eType != EType.IDENTIFIER) {
-                Debug.Log($"Error ({e.lineNum}): Cannot assign a value to an expression of type {e.children[0].eType}");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Cannot assign a value to an expression of type {e.children[0].eType}");
+                exceptions.log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
-                Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                exceptions.log(context.ToString());
             }
             if (e.children[0].vType == e.children[1].vType) {
-                Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                exceptions.log(context.ToString());
             }
         }
     }
@@ -510,13 +518,13 @@ public class GScriptCompiler
         // traverseExpr(e.children[0]);
         if (e.tType == TType.OP_NEGATION) {
             if (e.children[0].vType != VType.BOOL) {
-                Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                Debug.Log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
                 Debug.Log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_INVERSE) {
             if (e.children[0].vType != VType.INT || e.children[0].vType != VType.FLOAT) {
-                Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                Debug.Log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
                 Debug.Log(context.ToString());
             }
         }

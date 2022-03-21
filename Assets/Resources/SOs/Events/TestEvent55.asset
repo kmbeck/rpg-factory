@@ -18,6 +18,6 @@ MonoBehaviour:
   parallel: 0
   script: 'str a = "Test."
 
-    str b = 10
+    str b = "10"
 
     PRINT_MSG_TO_CONSOLE(a)'
