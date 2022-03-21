@@ -106,6 +106,12 @@ public class ASTParser {
                 case TType.KEY_STR:
                     s.varDefVType = VType.STRING;
                     break;
+                default:
+                    s.varDefVType = VType.NONE;
+                    // TODO: ERROR: Invalid keyword in VAR_DEF statement.
+                    // Should we wait to throw this error until the
+                    // traverse?
+                    break;
             }
             eatTokens();
             s.expr = parseAndGetExpression();
@@ -263,6 +269,7 @@ public class ASTParser {
             while (cur.type != TType.R_PAREN) {
                 parseExpression();
             }
+            context.pdepth--;
             return;
         }
         else if (cur.type == TType.R_PAREN) {

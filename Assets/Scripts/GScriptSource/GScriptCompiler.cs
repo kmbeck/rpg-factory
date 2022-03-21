@@ -325,6 +325,7 @@ public class GScriptCompiler
         foreach(Statement s in program) {
             traverseStatement(s);
         }
+        Debug.Log(context.ToString());
     }
 
     // Traverse a Statement and all of its child Statements & Expressions
@@ -380,7 +381,6 @@ public class GScriptCompiler
         }
         // Check to ensure var does not already exist in scope...
         if (s.varDefVType != s.expr.children[1].vType) {
-            // Error: cannot assign {s.expr.children[1].vType} to {s.expr.varDefVType} value.
             Debug.Log($"Error ({s.expr.lineNum}): cannot assign {s.expr.children[1].vType.ToString()} to {s.varDefVType.ToString()} value.");
         }
         else {
@@ -496,6 +496,10 @@ public class GScriptCompiler
                 Debug.Log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
+                Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                Debug.Log(context.ToString());
+            }
+            if (e.children[0].vType == e.children[1].vType) {
                 Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
                 Debug.Log(context.ToString());
             }

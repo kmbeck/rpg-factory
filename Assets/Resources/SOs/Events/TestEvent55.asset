@@ -16,6 +16,8 @@ MonoBehaviour:
   displayName: 
   triggerFlagUniqueID: 
   parallel: 0
-  script: 'string s = "Test."
+  script: 'str a = "Test."
 
-    PRINT_MSG_TO_CONSOLE(s)'
+    str b = 10
+
+    PRINT_MSG_TO_CONSOLE(a)'
