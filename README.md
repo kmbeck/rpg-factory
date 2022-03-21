@@ -1,5 +1,5 @@
 # RPG Factory Project Overview
-The goal of this project is to create an environment for developing RPGs in Unity. RPGs have a huge number of dynamic events and highly diverse interactions between objects, which can quickly turn Unity's Component and behaviour based interface into a cumbersome mess. The purpose of this tool is to allow developers to encapsulate behaviour logic into 'Events'. These Events can be assigned to specific callbacks on any given Component, allowing each callback to have an unlimited number of possible behaviours without having to add any logic to the Component script itself.
+The purpose of this tool is to allow developers to encapsulate behaviour logic into 'Events'. These Events can be assigned to specific callbacks on any given Component, allowing each callback to have an unlimited number of possible behaviours without having to add any logic to the Component script itself.
 
 ## GScript
 A white-space sensitive, strictly-typed scripting language which compiles into C# (and then is further compiled by Unity). Scripts written in this language are referred to as 'Events' or 'Event Scripts'. Events are stored as ScriptableObjects in your Unity project, and are loaded in to the Scriptable Object Database (SODB).
