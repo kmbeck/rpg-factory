@@ -129,8 +129,8 @@ public class ASTParser {
 
     // Wrapper for parseExpression that also returns the value of curExpr.
     private ExprNode parseAndGetExpression() {
-        //TODO: new line check only relevant if we are not enclosed by () or []
-        while(next.type != TType.WS_NEWLINE && !reachedEOF()) {
+        // Parse expression until unenclosed newline or eof is reached.
+        while((!context.enclosed && next.type != TType.WS_NEWLINE) && !reachedEOF()) {
             parseExpression();
         }
         curExpr.lineNum = cur.location[1];
@@ -229,8 +229,6 @@ public class ASTParser {
             expr.tType = cur.type;
             if (curExpr != null) {
                 // If curExpr is binary expr, add it based on operator precedence.
-                // TODO: After child expressions are read, make sure they evaluate to the
-                //      correct type???
                 if (curExpr.eType == EType.BINARY) {
                     if ((int)curExpr.tType <= (int)expr.tType) {
                         expr.addChild(curExpr);
@@ -340,8 +338,6 @@ public class ASTParser {
     }
 }
 
-//TODO: Keep track of current 'position' in LexContext while parsing so we can store
-//  the value when we throw error messages.
 /* * * * *
  * This keeps track of the 'context' while we are parsing the script.
  *  - \t, (), and [] counters
