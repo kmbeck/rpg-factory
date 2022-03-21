@@ -39,6 +39,9 @@ public class ASTParser {
 
     // Parses and returns a statement.
     public Statement parseStatement() {
+        // curExpr never carries over between statements?
+        curExpr = new ExprNode(EType.NONE);
+
         // Eat first token of statment.
         if (next.type == TType.KEY_IF) {
             Statement s = new Statement(SType.IF);
@@ -104,6 +107,7 @@ public class ASTParser {
                     s.varDefVType = VType.STRING;
                     break;
             }
+            eatTokens();
             s.expr = parseAndGetExpression();
             eatEOS();
             return s;
@@ -168,6 +172,7 @@ public class ASTParser {
                 ExprNode expr = new ExprNode(EType.BINARY);
                 expr.tType = TType.OP_ASSIGNMENT;
                 expr.addChild(curExpr);
+                eatTokens();    // Eat '=' token.
                 parseExpression();
                 expr.addChild(curExpr);
                 curExpr = expr;
@@ -194,6 +199,7 @@ public class ASTParser {
                 case TType.FLOAT_LITERAL:
                     expr.vType = VType.FLOAT;
                     break;
+                //TODO: fall-through case if value is fucked??
             }
             curExpr = expr;
         }
@@ -277,7 +283,7 @@ public class ASTParser {
             idx = tokens.Length - 1;
             cur = tokens[idx];
             next = tokens[idx];
-            Debug.Log($"[[{idx.ToString()}/{tokens.Length-1}]] Type: {cur.type.ToString()}, Val: {cur.value}  ->  Type: {next.type.ToString()}, Val: {next.value}");
+            //Debug.Log($"[[{idx.ToString()}/{tokens.Length-1}]] Type: {cur.type.ToString()}, Val: {cur.value}  ->  Type: {next.type.ToString()}, Val: {next.value}");
             return;
         }
 
@@ -291,7 +297,7 @@ public class ASTParser {
         else {
             next = tokens[tokens.Length - 1];
         }
-        Debug.Log($"[[{idx.ToString()}/{tokens.Length-1}]] Type: {cur.type.ToString()}, Val: {cur.value}  ->  Type: {next.type.ToString()}, Val: {next.value}");
+        //Debug.Log($"[[{idx.ToString()}/{tokens.Length-1}]] Type: {cur.type.ToString()}, Val: {cur.value}  ->  Type: {next.type.ToString()}, Val: {next.value}");
     }
 
     // Eats tokens after a statement has ended up until the start of the next
@@ -395,7 +401,7 @@ public class ExprNode {
     public VType vType;             // The type that this expression should ultimately evaluate to.
     public int lineNum;          // The line number in the original source code this exprssion is found on.
 
-    public ExprNode(EType exprType) {
+    public ExprNode(EType exprType=EType.NONE) {
         value = "";
         eType = exprType;
         tType = TType.NONE;
@@ -415,43 +421,6 @@ public class ExprNode {
             cur = parent;
         }
         return cur;
-    }
-
-    // Recurses through the expression after it has been successfully parsed.
-    // TODO: what do we do for expressions that do not return a type? Set vType no none?
-    //      Assignment operator should always be at the root if is in an expression???
-    //      EXPRS that can have multiple types on either side of it???
-    public void traverse(ExprNode expr) {
-        foreach(ExprNode childExpr in expr.children) {
-            traverse(childExpr);
-        }
-        // If this expression is a LITERAL, determine the vType.
-        if (expr.eType == EType.LITERAL) {
-            if (expr.vType == VType.NONE) {
-                // Assign appropriate VType to the LITERAL.
-                switch(expr.tType) {
-                    case TType.INT_LITERAL:
-                        expr.vType = VType.INT;
-                        break;
-                    case TType.STR_LITERAL:
-                        expr.vType = VType.STRING;
-                        break;
-                    case TType.FLOAT_LITERAL:
-                        expr.vType = VType.FLOAT;
-                        break;
-                    case TType.BOOL_LITERAL:
-                        expr.vType = VType.BOOL;
-                        break;
-                }
-            }
-            return;
-        }
-        // If this expresion still needs a vType, try to read it's vType from it's children?
-        if (expr.vType == VType.NONE) {
-            foreach(ExprNode childExpr in expr.children) {
-                //if (childExpr.vType != VType.NONE)
-            }
-        }
     }
 
     // Gives us a string representation of the expression depending on it's EType.

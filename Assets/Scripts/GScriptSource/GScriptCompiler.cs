@@ -300,6 +300,11 @@ public class GScriptCompiler
             idx++;
             xLoc++;
         }
+        string temp = "";
+        foreach (Token t in tokens) {
+            temp += t.ToString() + "|";
+        }
+        Debug.Log(temp);
         return tokens;
     }
 
@@ -369,9 +374,6 @@ public class GScriptCompiler
     }
 
     void traverseVarDefStatement(Statement s) {
-        // Manually set identifier type...should this be here???
-        s.expr.children[0].vType = s.varDefVType;
-
         // Traverse all child expressions.
         foreach(ExprNode e in s.expr.children) {
             traverseExpr(e);
@@ -379,7 +381,7 @@ public class GScriptCompiler
         // Check to ensure var does not already exist in scope...
         if (s.varDefVType != s.expr.children[1].vType) {
             // Error: cannot assign {s.expr.children[1].vType} to {s.expr.varDefVType} value.
-            //Debug.Log($"Error ({s.expr.lineNum}): cannot assign {s.expr.children[1].vType.ToString()} to {s.varDefVType.ToString()} value.");
+            Debug.Log($"Error ({s.expr.lineNum}): cannot assign {s.expr.children[1].vType.ToString()} to {s.varDefVType.ToString()} value.");
         }
         else {
             // Add new var to context.
@@ -443,18 +445,17 @@ public class GScriptCompiler
     }
 
     void traverseBinaryExpr(ExprNode e) {
-        // foreach (ExprNode c in e.children) {
-        //     traverseExpr(c);
-        // }
         // Different cases for different binary ops?
         if (e.tType == TType.OP_ADDITION) {
             if (e.children[0].vType != VType.INT   && 
                 e.children[0].vType != VType.FLOAT &&
                 e.children[0].vType != VType.STRING) {
                 Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                Debug.Log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
                 Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                Debug.Log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_SUBTRACTION    ||
@@ -466,30 +467,37 @@ public class GScriptCompiler
                  e.tType == TType.OP_LESSOREQUAL) {
             if (e.children[0].vType != VType.INT && e.children[0].vType != VType.FLOAT) {
                 Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                Debug.Log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
                 Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                Debug.Log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_AND || e.tType == TType.OP_OR) {
             if (e.children[0].vType != VType.BOOL) {
                 Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                Debug.Log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
                 Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                Debug.Log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_EQUALITY || e.tType == TType.OP_NOTEQUALS) {
             if (e.children[0].vType != e.children[1].vType) {
                 Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                Debug.Log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_ASSIGNMENT) {
             if (e.children[0].eType != EType.IDENTIFIER) {
                 Debug.Log($"Error ({e.lineNum}): Cannot assign a value to an expression of type {e.children[0].eType}");
+                Debug.Log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
                 Debug.Log($"Error ({e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+                Debug.Log(context.ToString());
             }
         }
     }
@@ -499,11 +507,13 @@ public class GScriptCompiler
         if (e.tType == TType.OP_NEGATION) {
             if (e.children[0].vType != VType.BOOL) {
                 Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                Debug.Log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_INVERSE) {
             if (e.children[0].vType != VType.INT || e.children[0].vType != VType.FLOAT) {
                 Debug.Log($"Error ({e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+                Debug.Log(context.ToString());
             }
         }
     }
@@ -586,7 +596,14 @@ public class VarContext {
         //      //Functions need to have the types of each parameter defined...
     }
 
-    // ToString()?
+    public string ToString() {
+        string retval = "";
+        foreach(Scope s in scopes) {
+            retval += s.ToString();
+        }
+        retval += "\n* * * * * * * * * * * * * * * * * * * *";
+        return retval;
+    }
 }
 
 // Keeps track of what variables are defined in the current scope.
@@ -624,6 +641,14 @@ public class Scope {
             Debug.Log($"Var: {name} already exists in scope!");
         }
     }
+
+    public string ToString() {
+        string retval = "";
+        foreach(ScopeVar v in vars) {
+            retval += v.ToString() + "\n";
+        }
+        return retval;
+    }
 }
 
 // A variable or function that is visible in the current scope.
@@ -637,6 +662,10 @@ public class ScopeVar {
     public ScopeVar(string _name, VType _type) {
         name = _name;
         type = _type;
+    }
+
+    public string ToString() {
+        return $"var: {name}, {type.ToString()}";
     }
 }
 
