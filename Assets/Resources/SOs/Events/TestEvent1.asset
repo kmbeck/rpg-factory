@@ -20,9 +20,11 @@ MonoBehaviour:
 
     int b = 20
 
-    int c = (a + b) * b
+    float c = 55.123
 
-    string test_msg
-    = "This is a test message!"
+    int d = (a + b)
+    * b
+
+    str test_msg = "This is a test message!"
 
     PRINT_MSG_TO_CONSOLE(test_msg)'

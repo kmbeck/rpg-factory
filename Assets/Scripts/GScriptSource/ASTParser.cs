@@ -409,6 +409,7 @@ public class ExprNode {
         value = "";
         eType = exprType;
         tType = TType.NONE;
+        vType = VType.NONE;
         children = new List<ExprNode>();
         parent = null;
     }

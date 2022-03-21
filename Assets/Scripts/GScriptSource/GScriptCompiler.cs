@@ -93,6 +93,19 @@ public class GScriptCompiler
         }
     }
 
+    // Compile scripts into C# code in Unity project.
+    public void compile(string program) {
+        List<Token> tokens = tokenize(program);
+        List<Statement> statements = parse(tokens.ToArray());
+        traverse(statements);
+        if (!exceptions.empty()) {
+            exceptions.printAllExceptions();
+            return;
+        }
+        // Go on to generate c# code here...
+        
+    }
+
     // Convert input into a list of Tokens.
     // NOTE: Every time idx is incremented, xLoc must also be incremented!!!
     //       Otherwise error messages will point to the wrong location in source code LOL
@@ -333,7 +346,7 @@ public class GScriptCompiler
         foreach(Statement s in program) {
             traverseStatement(s);
         }
-        Debug.Log(context.ToString());
+        //Debug.Log(context.ToString());
     }
 
     // Traverse a Statement and all of its child Statements & Expressions
@@ -418,9 +431,17 @@ public class GScriptCompiler
 
     // Traverse an Expression and all of it's children.
     void traverseExpr(ExprNode e) {
+        // First traverse all children of this expression.
         foreach (ExprNode c in e.children) {
             traverseExpr(c);
+
+            // If c has a valid eType, adjust this eType accordingly...
+            if (e.vType == VType.NONE && c.vType != VType.NONE) {
+                e.vType = c.vType;
+            }
         }
+
+        // Now we traverse the expression node in the parameter.
         switch (e.eType) {
             case EType.BINARY:
                 traverseBinaryExpr(e);
