@@ -130,13 +130,13 @@ public class ASTParser {
     // Wrapper for parseExpression that also returns the value of curExpr.
     private ExprNode parseAndGetExpression() {
         // Parse expression until unenclosed newline or eof is reached.
-        while((!context.enclosed && next.type != TType.WS_NEWLINE) && !reachedEOF()) {
+        while((!context.enclosed() && next.type != TType.WS_NEWLINE) && !reachedEOF()) {
             parseExpression();
         }
         curExpr.lineNum = cur.location[1];
         ExprNode rootExpr = curExpr.getRoot();
         // Debug print all expressions in their own msg.
-        //Debug.Log(rootExpr.ToString());
+        Debug.Log(rootExpr.ToString());
         return rootExpr;
     }
 
@@ -206,7 +206,7 @@ public class ASTParser {
                 case TType.FLOAT_LITERAL:
                     expr.vType = VType.FLOAT;
                     break;
-                //TODO: fall-through case if value is fucked??
+                //TODO: fall-through case if value is JACKED??
             }
             curExpr = expr;
         }

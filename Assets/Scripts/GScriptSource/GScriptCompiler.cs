@@ -333,7 +333,7 @@ public class GScriptCompiler
         foreach(Statement s in program) {
             traverseStatement(s);
         }
-        //Debug.Log(context.ToString());
+        Debug.Log(context.ToString());
     }
 
     // Traverse a Statement and all of its child Statements & Expressions
@@ -388,7 +388,10 @@ public class GScriptCompiler
             traverseExpr(e);
         }
         // Check to ensure var does not already exist in scope...
-        if (s.varDefVType != s.expr.children[1].vType) {
+        if (context.hasVar(s.expr.children[0].value)) {
+            exceptions.log($"Error (ln: {s.expr.lineNum}): identifier '{s.expr.children[0].value}' already exists in scope.");
+        }
+        else if (s.varDefVType != s.expr.children[1].vType) {
             exceptions.log($"Error (ln: {s.expr.lineNum}): cannot assign {s.expr.children[1].vType.ToString()} to {s.varDefVType.ToString()} value.");
         }
         else {
@@ -503,11 +506,7 @@ public class GScriptCompiler
                 exceptions.log($"Error (ln: {e.lineNum}): Cannot assign a value to an expression of type {e.children[0].eType}");
                 exceptions.log(context.ToString());
             }
-            if (e.children[0].vType != e.children[1].vType) {
-                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                exceptions.log(context.ToString());
-            }
-            if (e.children[0].vType == e.children[1].vType) {
+            else if (e.children[0].vType != e.children[1].vType) {
                 exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
                 exceptions.log(context.ToString());
             }
@@ -647,10 +646,6 @@ public class Scope {
     public void addVar(string name, VType type) {
         if (!hasVar(name)) {
             addVar(name, type);
-        }
-        else {
-            //TODO: Error, var already exists in scopee (thrown at statemetn level???)
-            Debug.Log($"Var: {name} already exists in scope!");
         }
     }
 
