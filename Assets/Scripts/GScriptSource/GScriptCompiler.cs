@@ -483,11 +483,9 @@ public class GScriptCompiler
                 e.children[0].vType != VType.FLOAT &&
                 e.children[0].vType != VType.STRING) {
                 exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-                exceptions.log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
                 exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                exceptions.log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_SUBTRACTION    ||
@@ -499,37 +497,30 @@ public class GScriptCompiler
                  e.tType == TType.OP_LESSOREQUAL) {
             if (e.children[0].vType != VType.INT && e.children[0].vType != VType.FLOAT) {
                 exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-                exceptions.log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
                 exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                exceptions.log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_AND || e.tType == TType.OP_OR) {
             if (e.children[0].vType != VType.BOOL) {
                 exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-                exceptions.log(context.ToString());
             }
             if (e.children[0].vType != e.children[1].vType) {
                 exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                exceptions.log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_EQUALITY || e.tType == TType.OP_NOTEQUALS) {
             if (e.children[0].vType != e.children[1].vType) {
                 exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                exceptions.log(context.ToString());
             }
         }
         else if (e.tType == TType.OP_ASSIGNMENT) {
             if (e.children[0].eType != EType.IDENTIFIER) {
                 exceptions.log($"Error (ln: {e.lineNum}): Cannot assign a value to an expression of type {e.children[0].eType}");
-                exceptions.log(context.ToString());
             }
             else if (e.children[0].vType != e.children[1].vType) {
                 exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-                exceptions.log(context.ToString());
             }
         }
     }
@@ -538,20 +529,34 @@ public class GScriptCompiler
         // traverseExpr(e.children[0]);
         if (e.tType == TType.OP_NEGATION) {
             if (e.children[0].vType != VType.BOOL) {
-                Debug.Log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
             }
         }
         else if (e.tType == TType.OP_INVERSE) {
             if (e.children[0].vType != VType.INT || e.children[0].vType != VType.FLOAT) {
-                Debug.Log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-                Debug.Log(context.ToString());
+                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
             }
         }
     }
 
     void traverseFunctionCallExpr(ExprNode e) {
-        //TODO
+        List<ScopeParam> tempParams = new List<ScopeParam>();
+        for (int i = 1; i < e.children.Count; i++) {
+            tempParams.Add(new ScopeParam(e.children[i].value, e.children[i].vType, false));
+        }
+        ScopeFunc tempFunc = new ScopeFunc(e.children[0].value, VType.NONE, tempParams);
+        e.vType = VType.NONE;
+        if (!context.hasFunc(tempFunc)) {
+            string paramStr = "";
+            foreach(ScopeParam p in tempParams) {
+                paramStr += $"{p.type.ToString()},";
+            }
+            paramStr = paramStr.Remove(paramStr.Length - 1, 1);
+            exceptions.log($"Error (ln: {e.lineNum}): No function matches definition for {tempFunc.name} ({paramStr}).");
+        }
+        else {
+            e.vType = context.getFunc(tempFunc).returnType;
+        }
     }
 
     void traverseIndexingExpr(ExprNode e) {
@@ -573,6 +578,7 @@ public class VarContext {
     public VarContext() {
         scopes = new List<Scope>();
         initGlobalScope();
+        Debug.Log(this.ToString());
     }
 
     // Push a new Scope.
@@ -618,14 +624,43 @@ public class VarContext {
         return false;
     }
 
+    public void addFunc(ScopeFunc newFunc) {
+        if (!hasFunc(newFunc)) {
+            scopes[scopes.Count-1].funcs.Add(newFunc);
+        }
+    }
+
+    // Yea its weird to use a ScopeFunc to get a scope func...
+    // But this way a dummy ScopeFunc can be used to get the full data...
+    public ScopeFunc getFunc(ScopeFunc tgtFunc) {
+        foreach(Scope s in scopes) {
+            if (s.hasFunc(tgtFunc)) {
+                return s.getFunc(tgtFunc);
+            }
+        }
+        return null;
+    }
+
+    public bool hasFunc(ScopeFunc tgtFunc) {
+        foreach (Scope s in scopes) {
+            if (s.hasFunc(tgtFunc)) {
+                return true;
+            }
+        }
+        return false;
+     }
+
     // Create first 'global' level scope and populate it with references to the
     // SODB libraries.
     private void initGlobalScope() {
         pushScope();
-        //ScopeVar[] libIdentifiers = SODB.inst.getContextualizedLibValues();
-        //foreach (ScopeVar v in libIdentifiers) { addVar(v); }
-        // TODO: add function identfires here from EventInterface?
-        //      //Functions need to have the types of each parameter defined...
+        GScriptContextualizer ctxr = new GScriptContextualizer();
+
+        ScopeVar[] vars = ctxr.getContextualizedScopeVars<SODB>();
+        foreach (ScopeVar v in vars) { addVar(v); }
+
+        ScopeFunc[] funcs = ctxr.getContextualizedScopeFuncs<EventInterface>();
+        foreach (ScopeFunc f in funcs) { addFunc(f); }
     }
 
     public string ToString() {
@@ -633,7 +668,6 @@ public class VarContext {
         foreach(Scope s in scopes) {
             retval += s.ToString();
         }
-        retval += "\n* * * * * * * * * * * * * * * * * * * *";
         return retval;
     }
 }
@@ -641,9 +675,11 @@ public class VarContext {
 // Keeps track of what variables are defined in the current scope.
 public class Scope {
     public List<ScopeVar> vars;
+    public List<ScopeFunc> funcs;
 
     public Scope() {
         vars = new List<ScopeVar>();
+        funcs = new List<ScopeFunc>();
     }
 
     public bool hasVar(string name) { 
@@ -670,16 +706,43 @@ public class Scope {
         }
     }
 
+    public bool hasFunc(ScopeFunc tgtFunc) {
+        foreach (ScopeFunc f in funcs) {
+            if (f.isEqual(tgtFunc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ScopeFunc getFunc(ScopeFunc tgtFunc) {
+        foreach (ScopeFunc f in funcs) {
+            if (f.isEqual(tgtFunc)) {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    public void addFunc(ScopeFunc newFunc) {
+        if (!hasFunc(newFunc)) {
+            funcs.Add(newFunc);
+        }
+    }
+
     public string ToString() {
         string retval = "";
         foreach(ScopeVar v in vars) {
             retval += v.ToString() + "\n";
         }
+        foreach(ScopeFunc f in funcs) {
+            retval += f.ToString() + "\n";
+        }
         return retval;
     }
 }
 
-// A variable or function that is visible in the current scope.
+// A method that is visible in the current scope.
 public class ScopeVar {
     public string name;
     public VType type;
@@ -694,6 +757,62 @@ public class ScopeVar {
 
     public string ToString() {
         return $"var: {name}, {type.ToString()}";
+    }
+}
+
+// A function that is visible in the current scope.
+public class ScopeFunc {
+    public string name;
+    public VType returnType;
+    public List<ScopeParam> parameters;
+
+    public ScopeFunc(string _name, VType _returnType, List<ScopeParam> _parameters) {
+        name = _name;
+        returnType = _returnType;
+        parameters = _parameters;
+    }
+
+    // Only returns true if name & all parameters are the same type in the same order.
+    public bool isEqual(ScopeFunc other) {
+        if (name == other.name && parameters.Count == other.parameters.Count) {
+            for(int i = 0; i < parameters.Count; i++) {
+                if (!parameters[i].isSameType(other.parameters[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public string ToString() {
+        string retval = $"func: {name}, {returnType.ToString()}";
+        foreach (ScopeParam p in parameters) { retval += "\n\t" + p.ToString(); }
+        return retval;
+    }
+}
+
+// A parameter for a function that is visible in the current scope.
+public class ScopeParam {
+    public string name;
+    public VType type;
+    public bool required;   // Is this a required parameter?
+
+    public ScopeParam(string _name, VType _type, bool _required) {
+        name = _name;
+        type = _type;
+        required = _required;
+    }
+
+    public bool isSameType(ScopeParam other) {
+        if (type == other.type) {
+            return true;
+        }
+        return false;
+    }
+
+    public string ToString() {
+        return $"param: {name}, {type.ToString()}, {required}";
     }
 }
 

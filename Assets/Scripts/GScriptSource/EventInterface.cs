@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 /* * * * *
@@ -9,8 +10,30 @@ using UnityEngine;
  * TODO: classes should be able to inherit from this class to add their functions
  * to the list of available functions in GScript.
  * * * * */
-public abstract class EventInterface : MonoBehaviour
+public class EventInterface : MonoBehaviour
 {
+    public static EventInterface inst;
+
+    void Start() {
+        if (inst != null) {
+            Destroy(this);
+        }
+        else {
+            inst = this;
+            //Initialize();
+        }
+    }
+
+    void Awake() {
+        if (inst != null) {
+            Destroy(this);
+        }
+        else {
+            inst = this;
+            //Initialize();
+        }
+    }
+
     public static void PRINT_MSG_TO_CONSOLE(string message) {
         Debug.Log(message);
     }
