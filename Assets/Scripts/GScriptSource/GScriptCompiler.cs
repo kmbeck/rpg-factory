@@ -4,31 +4,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-/* * * * * * * 
- * GSCRIPT IDEAS
- * -------------
- * Features:
- *  - White-space & case sensitive.
- *  - easy references to all objects in SODB
- *  - easy reference to any number of programmer-defiend interfaces for
- *      manipulating the game.
- *  - dynamically execute other gscript events via and EXEC_EVENT() function
- *  - freely manipulate existing flags (only copies not original SOs)
- *  - EVENT TAGS
- * COMPILER NOTES
- * --------------
- *  - compiles down to a list of functions and operations to be executed.
- *      This can basically be function calls from the aformentioned interface,
- *      Math, string manipulation, calling functions & referencing data from SODB
- *      and other game objects.
- *  - this implies that every object in the game that needs to be controlled or
- *      manipulated by an event will need to somehow make itself visible to the
- *      thing that is executing event commands.
- *  - scripts should be 'threadable' and there will probably need to be special
- *      functionality for when an script invokes another 'parallel' script to
- *      executed as a coroutine or something.
- * * * * * * */
-
 public class GScriptCompiler
 {
     // Regex for finding all IDENTIFIERS.
