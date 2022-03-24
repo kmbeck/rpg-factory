@@ -102,7 +102,7 @@ public class SODB : MonoBehaviour
 
     // Returns the name of all defined libs in this class as a list of strings & returns.
     // Used by ASTParser to help poplate it's global variables before parsing.
-    public ScopeVar[] getContextualizedLibValues() {
+    public ScopeVar[] getContextualizedScopeVars() {
         // Get a list of all public static vars in SODB.
         FieldInfo[] sodbFields = typeof(SODB).GetFields(BindingFlags.Public|BindingFlags.Static|BindingFlags.DeclaredOnly);
 
