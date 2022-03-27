@@ -20,6 +20,4 @@ MonoBehaviour:
 
     str b = "10"
 
-    str b = "11"
-
     PRINT_MSG_TO_CONSOLE(a)'

@@ -1,6 +1,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -26,17 +27,48 @@ public class GScriptCompiler
         }
     }
 
-    // Compile scripts into C# code in Unity project.
-    public void compile(string program) {
-        List<Token> tokens = tokenize(program);
+    // Compile a single event and return as a C# function.
+    public string compileEvent(SOEvent e) {
+        List<Token> tokens = tokenize(e.script);
         List<Statement> statements = parse(tokens.ToArray());
         traverse(statements);
         if (!exceptions.empty()) {
             exceptions.printAllExceptions();
-            return;
+            return "";
         }
-        // Go on to generate c# code here...
-        string cCode = translate(statements);
+        string headerCode = $"public static void EVENT_{e.uniqueID.ToUpper()}() {{\n";
+        string bodyCode = translate(statements);
+        string footerCode = "}\n\n";
+        return headerCode + bodyCode + footerCode;
+    }
+
+    // Compile scripts into C# code in Unity project.
+    public void compileAllEvents() {
+        string bodyCode = "";
+        foreach(SOEvent e in SODB.LIB_EVENT.lib.Values) {
+            bodyCode += compileEvent(e);
+        }
+
+        string outputFileName = "GScriptEventLibrary.cs";
+        string fileHeaderCode = @"
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+/* * * * *
+ *          --- DO NOT EDIT ---
+ *  THIS CLASS CONTAINS GENERATED CODE!!!
+ *          --- DO NOT EDIT ---
+ * * * * */
+
+public abstract class GScriptEventLibrary : MonoBehaviour
+{
+";
+        string fileFooterCode = "}";
+        string outStr = fileHeaderCode + bodyCode + fileFooterCode;
+        StreamWriter sw = new StreamWriter($"Assets/Scripts/GScriptSource/TestOutput/{outputFileName}");
+        sw.WriteLine(outStr);
+        sw.Close();
     }
 
     // Translate input string into a list of Tokens & return.

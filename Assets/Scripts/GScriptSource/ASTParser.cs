@@ -477,7 +477,12 @@ public class ExprNode {
                 retval = $"{value}";
                 break;
             case EType.LITERAL:
-                retval = $"{value}";
+                if (vType == VType.FLOAT) {
+                    retval = $"{value}f";
+                }
+                else {
+                    retval = $"{value}";
+                }
                 break;
             case EType.INDEXING:
                 retval = $"{children[0].ToString()}[{children[1].ToString()}]";
@@ -488,7 +493,7 @@ public class ExprNode {
                     paramStr += children[i].ToString() + ",";
                 }
                 paramStr = paramStr.Remove(paramStr.Length - 1, 1);
-                retval = $"{children[0].ToString()}({paramStr})";
+                retval = $"EventInterface.{children[0].ToString()}({paramStr})";
                 break;
             case EType.BINARY:
                 retval = $"{children[0].ToString()} {translateTType()} {children[1].ToString()}";

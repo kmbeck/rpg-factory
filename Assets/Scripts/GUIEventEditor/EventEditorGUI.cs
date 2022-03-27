@@ -54,7 +54,8 @@ public class EventEditorGUI : EditorWindow
     // Validate the current contents of the Event Script text field.
     public void onValidateClicked() {
         GScriptCompiler compiler = new GScriptCompiler();
-        compiler.validate(root.Q<TextField>("tf_EventScript").value);
+        //compiler.validate(root.Q<TextField>("tf_EventScript").value);
+        compiler.compileAllEvents();
     }
 
     public void onLoadClicked() {

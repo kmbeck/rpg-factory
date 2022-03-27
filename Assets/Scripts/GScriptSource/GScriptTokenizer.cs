@@ -53,7 +53,7 @@ public class GScriptTokenizer
     //TODO: "." access operator for referencing members!
 
     public GScriptTokenizer() {
-
+        
     }
 
     // Convert input into a list of Tokens.

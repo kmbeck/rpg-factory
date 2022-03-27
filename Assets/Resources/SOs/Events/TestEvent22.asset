@@ -18,13 +18,4 @@ MonoBehaviour:
   parallel: 0
   script: 'int a = 10
 
-    int b = 20
-
-    float c = "55.123"
-
-    int d = (a + b)
-    * b
-
-    str test_msg = "This is a test message!"
-
-    PRINT_MSG_TO_CONSOLE(test_msg)'
+    int b = 20'
