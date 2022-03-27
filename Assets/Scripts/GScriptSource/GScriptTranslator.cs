@@ -128,52 +128,6 @@ public class GScriptTranslator
     string translateExpr(ExprNode e) {
         return e.ToString();   
     }
-
-    // string translateBinaryExpr(ExprNode e) {
-    //     return "";
-    // }    // string translateBinaryExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateFunctionCallExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateIdentifierExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateIndexingExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateLiteralExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateUnaryExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateFunctionCallExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateIdentifierExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateIndexingExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateLiteralExpr(ExprNode e) {
-    //     return "";
-    // }
-
-    // string translateUnaryExpr(ExprNode e) {
-    //     return "";
-    // }
 }
 
 public class TranslatorContext {
