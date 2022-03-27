@@ -60,11 +60,14 @@ public class GScriptCompiler
         List<Token> tokens = tokenize(program);
         List<Statement> statements = parse(tokens.ToArray());
         traverse(statements);
+        Debug.Log("?");
         if (!exceptions.empty()) {
             exceptions.printAllExceptions();
         }
         else {
             Debug.Log("Script validated successfully!");
+            // TODO: translate call for debugging only!
+            string cCode = translate(statements);
         }
     }
 
@@ -78,7 +81,7 @@ public class GScriptCompiler
             return;
         }
         // Go on to generate c# code here...
-        
+        string cCode = translate(statements);
     }
 
     // Convert input into a list of Tokens.
@@ -174,7 +177,7 @@ public class GScriptCompiler
                 tokens.Add(new Token(TType.OP_AND,buf,new int[2] {xLoc, yLoc}));
                 buf = "";
             }
-            else if (buf == OP_OR) {                                    // ||
+            else if (buf == OP_OR) {                                    // ||
                 tokens.Add(new Token(TType.OP_OR,buf,new int[2] {xLoc, yLoc}));
                 buf = "";
             }
@@ -307,21 +310,24 @@ public class GScriptCompiler
     // equivalent to the entire program.
     //      If an error is encountered while parsing, we must throw an error & return.
     public List<Statement> parse(Token[] tokens) {
-        ASTParser parser = new ASTParser();
         return new ASTParser().parse(tokens);
     }
 
     // Traverse over our parsed Statements and ensure that there are no grammar
     // or scope errors in the program.
-    void traverse(List<Statement> program) {
+    void traverse(List<Statement> statements) {
         List<string> errors = new List<string>();
         Scope scope = new Scope();
         context = new VarContext();
         exceptions = new GScriptExceptionHandler();
-        foreach(Statement s in program) {
+        foreach(Statement s in statements) {
             traverseStatement(s);
         }
-        //Debug.Log(context.ToString());
+    }
+
+    // Translate list of Statements and translate them into a C# function.
+    string translate(List<Statement> statements) {
+        return new GScriptTranslator().translate(statements);
     }
 
     // Traverse a Statement and all of its child Statements & Expressions
@@ -345,10 +351,6 @@ public class GScriptCompiler
             case SType.NONE:
                 //Error: cannot declare variable of NONE type.
                 break;
-
-            foreach (Statement c in s.children) {
-                traverseStatement(c);
-            }
         }
 
         // Traverse over any children of this statementhasVar
@@ -452,6 +454,17 @@ public class GScriptCompiler
     }
 
     void traverseBinaryExpr(ExprNode e) {
+        // These binery operators always evaluate to a bool, reguardless of childrens type.
+        if (e.tType == TType.OP_GREATER         ||
+            e.tType == TType.OP_GREATEROREQUAL  ||
+            e.tType == TType.OP_LESS            ||
+            e.tType == TType.OP_LESSOREQUAL     ||
+            e.tType == TType.OP_EQUALITY        ||
+            e.tType == TType.OP_NOTEQUALS) 
+        {
+            e.vType = VType.BOOL;
+        }
+
         // Different cases for different binary ops?
         if (e.tType == TType.OP_ADDITION) {
             if (e.children[0].vType != VType.INT   && 
@@ -537,14 +550,6 @@ public class GScriptCompiler
     void traverseIndexingExpr(ExprNode e) {
         //TODO
     }
-
-    // void translate(List<Statement> program) {
-
-    // }
-
-    // void transform() {
-
-    // }
 }
 
 public class VarContext {

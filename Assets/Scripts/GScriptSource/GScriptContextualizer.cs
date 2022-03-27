@@ -6,7 +6,7 @@ using UnityEngine;
 
 /* * * * *
  * Contains functions to easily turn fields & methods of a class into ScopeVars
- * and ScopeFuncs that can be easily loaded into the global scope for the
+ * and ScopeFuncs that can then be loaded into the global scope for the
  * GScript engine.
  * * * * */
 

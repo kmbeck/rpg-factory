@@ -32,6 +32,7 @@ public class ASTParser {
         next = tokens[0];
         while (!reachedEOF()) {
             Statement s = parseStatement();
+            Debug.Log(idx + ", " + _tokens.Length);
             program.Add(s);
         }
         return program;
@@ -47,16 +48,16 @@ public class ASTParser {
             Statement s = new Statement(SType.IF);
             // Parse the conditional expr for the if statement.
             // (this should start with the '(' token...)
-            eatTokens();
+            while (cur.type != TType.L_PAREN) { eatTokens(); }
             s.expr = parseAndGetExpression();
+            s.tdepth = context.tdepth;
 
             // Get ready to read child statements of the current if statement.
             eatEOS();
             context.tdepth++;
-            s.tdepth = context.tdepth;
 
             // While we have not broken out of this if block, read in child statements.
-            while(context.tdepth >= s.tdepth) {
+            while(context.tdepth >= s.tdepth && !reachedEOF()) {
                 s.children.Add(parseStatement());
                 eatEOS();
             }
@@ -68,14 +69,14 @@ public class ASTParser {
             // (this should start with the '(' token...)
             eatTokens();
             s.expr = parseAndGetExpression();
+            s.tdepth = context.tdepth;
 
             // Get ready to read child statements of the current while statement.
             eatEOS();
             context.tdepth++;
-            s.tdepth = context.tdepth;
 
             // While we have not broken out of this while block, read in child statements.
-            while(context.tdepth >= s.tdepth) {
+            while(context.tdepth >= s.tdepth && !reachedEOF()) {
                 s.children.Add(parseStatement());
                 eatEOS();
             }
@@ -85,6 +86,7 @@ public class ASTParser {
             Statement s = new Statement(SType.WAIT);
             eatTokens();
             s.expr = parseAndGetExpression();
+            s.tdepth = context.tdepth;
             eatEOS();
             return s;
         }
@@ -115,12 +117,14 @@ public class ASTParser {
             }
             eatTokens();
             s.expr = parseAndGetExpression();
+            s.tdepth = context.tdepth;
             eatEOS();
             return s;
         }
         else {
             Statement s = new Statement(SType.EXPR);
             s.expr = parseAndGetExpression();
+            s.tdepth = context.tdepth;
             eatEOS();
             return s;
         }
@@ -268,6 +272,7 @@ public class ASTParser {
             while (cur.type != TType.R_PAREN) {
                 parseExpression();
             }
+            curExpr.enclosed = true;
             context.pdepth--;
             return;
         }
@@ -304,6 +309,7 @@ public class ASTParser {
             next = tokens[tokens.Length - 1];
         }
         //Debug.Log($"[[{idx.ToString()}/{tokens.Length-1}]] Type: {cur.type.ToString()}, Val: {cur.value}  ->  Type: {next.type.ToString()}, Val: {next.value}");
+        // TODO: CASE FOR REACHING EOF TO AVOID INFINITE EATING?
     }
 
     // Eats tokens after a statement has ended up until the start of the next
@@ -400,10 +406,11 @@ public class ExprNode {
     public string value;            // Used by Identifiers to denote name and Literals to denote value.
     public EType eType;             // The type of expression this is.
     public TType tType;             // The type of token associated with this expr.
-    public List<ExprNode> children; // Child expressions of this expression.
-    public ExprNode parent;         // Node of this node.
+    public List<ExprNode> children;
+    public ExprNode parent;
     public VType vType;             // The type that this expression should ultimately evaluate to.
-    public int lineNum;          // The line number in the original source code this exprssion is found on.
+    public int lineNum;             // The line number in the original source code this exprssion is found on.
+    public bool enclosed;           // Is this expression enclosed in '()'. Only true at root node of enclosed expression.
 
     public ExprNode(EType exprType=EType.NONE) {
         value = "";
@@ -412,6 +419,7 @@ public class ExprNode {
         vType = VType.NONE;
         children = new List<ExprNode>();
         parent = null;
+        enclosed = false;
     }
 
     public void addChild(ExprNode child) {
@@ -442,17 +450,25 @@ public class ExprNode {
                 retval = $"{children[0].ToString()}[{children[1].ToString()}]";
                 break;
             case EType.FUNCTION:
-                retval = $"{children[0].ToString()}({children[1].ToString()})";
+                string paramStr = "";
+                for(int i = 1; i < children.Count; i++) {
+                    paramStr += children[i].ToString() + ",";
+                }
+                paramStr.Remove(paramStr.Length - 1, 1);
+                retval = $"{children[0].ToString()}({paramStr})";
                 break;
             case EType.BINARY:
-                retval = $"({children[0].ToString()} {tType.ToString()} {children[1].ToString()})";
+                retval = $"{children[0].ToString()} {tType.ToString()} {children[1].ToString()}";
                 break;
             case EType.UNARY:
-                retval = $"({tType.ToString()}{children[0].ToString()})";
+                retval = $"{tType.ToString()}{children[0].ToString()}";
                 break;
             case EType.NONE:
-                retval = "NONE";
+                retval = "";
                 break;
+        }
+        if (enclosed) {
+            retval = "(" + retval + ")";
         }
         return retval;
     }
