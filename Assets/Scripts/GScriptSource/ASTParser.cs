@@ -32,7 +32,6 @@ public class ASTParser {
         next = tokens[0];
         while (!reachedEOF()) {
             Statement s = parseStatement();
-            Debug.Log(idx + ", " + _tokens.Length);
             program.Add(s);
         }
         return program;
@@ -57,7 +56,44 @@ public class ASTParser {
             context.tdepth++;
 
             // While we have not broken out of this if block, read in child statements.
-            while(context.tdepth >= s.tdepth && !reachedEOF()) {
+            while(context.tdepth > s.tdepth && !reachedEOF()) {
+                s.children.Add(parseStatement());
+                eatEOS();
+            }
+            return s;
+        }
+        // Eat first token of statment.
+        else if (next.type == TType.KEY_ELIF) {
+            Statement s = new Statement(SType.ELIF);
+            // Parse the conditional expr for the if statement.
+            // (this should start with the '(' token...)
+            while (cur.type != TType.L_PAREN) { eatTokens(); }
+            s.expr = parseAndGetExpression();
+            s.tdepth = context.tdepth;
+
+            // Get ready to read child statements of the current if statement.
+            eatEOS();
+            context.tdepth++;
+
+            // While we have not broken out of this if block, read in child statements.
+            while(context.tdepth > s.tdepth && !reachedEOF()) {
+                s.children.Add(parseStatement());
+                eatEOS();
+            }
+            return s;
+        }
+        // Eat first token of statment.
+        else if (next.type == TType.KEY_ELSE) {
+            Statement s = new Statement(SType.ELSE);
+            s.tdepth = context.tdepth;
+
+            // Get ready to read child statements of the current if statement.
+            eatTokens();
+            eatEOS();
+            context.tdepth++;
+
+            // While we have not broken out of this if block, read in child statements.
+            while(context.tdepth > s.tdepth && !reachedEOF()) {
                 s.children.Add(parseStatement());
                 eatEOS();
             }
@@ -76,7 +112,7 @@ public class ASTParser {
             context.tdepth++;
 
             // While we have not broken out of this while block, read in child statements.
-            while(context.tdepth >= s.tdepth && !reachedEOF()) {
+            while(context.tdepth > s.tdepth && !reachedEOF()) {
                 s.children.Add(parseStatement());
                 eatEOS();
             }
@@ -139,8 +175,6 @@ public class ASTParser {
         }
         curExpr.lineNum = cur.location[1];
         ExprNode rootExpr = curExpr.getRoot();
-        // Debug print all expressions in their own msg.
-        Debug.Log(rootExpr.ToString());
         return rootExpr;
     }
 
@@ -454,14 +488,14 @@ public class ExprNode {
                 for(int i = 1; i < children.Count; i++) {
                     paramStr += children[i].ToString() + ",";
                 }
-                paramStr.Remove(paramStr.Length - 1, 1);
+                paramStr = paramStr.Remove(paramStr.Length - 1, 1);
                 retval = $"{children[0].ToString()}({paramStr})";
                 break;
             case EType.BINARY:
-                retval = $"{children[0].ToString()} {tType.ToString()} {children[1].ToString()}";
+                retval = $"{children[0].ToString()} {translateTType()} {children[1].ToString()}";
                 break;
             case EType.UNARY:
-                retval = $"{tType.ToString()}{children[0].ToString()}";
+                retval = $"{translateTType()}{children[0].ToString()}";
                 break;
             case EType.NONE:
                 retval = "";
@@ -472,11 +506,51 @@ public class ExprNode {
         }
         return retval;
     }
+
+    // Translate the input token into a string.
+    string translateTType() {
+        switch (tType) {
+            case TType.OP_NEGATION:
+                return "!";
+            case TType.OP_INVERSE:
+                return "-";
+            case TType.OP_MULTIPLICATION:
+                return "*";
+            case TType.OP_DIVISION:
+                return "/";
+            case TType.OP_ADDITION:
+                return "+";
+            case TType.OP_SUBTRACTION:
+                return "-";
+            case TType.OP_LESS:
+                return "<";
+            case TType.OP_LESSOREQUAL:
+                return "<=";
+            case TType.OP_GREATER:
+                return ">";
+            case TType.OP_GREATEROREQUAL:
+                return ">=";
+            case TType.OP_EQUALITY:
+                return "==";
+            case TType.OP_NOTEQUALS:
+                return "!=";
+            case TType.OP_AND:
+                return "&&";
+            case TType.OP_OR:
+                return "||";
+            case TType.OP_ASSIGNMENT:
+                return "=";
+        }
+        // Error here?
+        return "";
+    }
 }
 
 // Enum defines all types of Statements.
 public enum SType {
     IF,
+    ELIF,
+    ELSE,
     WHILE,
     WAIT,
     VAR_DEF,

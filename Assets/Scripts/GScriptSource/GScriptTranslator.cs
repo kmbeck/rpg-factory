@@ -38,6 +38,12 @@ public class GScriptTranslator
             case SType.IF:
                 retval += translateIfStatement(s);
                 break;
+            case SType.ELIF:
+                retval += translateElifStatement(s);
+                break;
+            case SType.ELSE:
+                retval += translateElseStatement(s);
+                break;
             case SType.VAR_DEF:
                 retval += translateVarDefStatement(s);
                 break;
@@ -60,6 +66,24 @@ public class GScriptTranslator
 
     string translateIfStatement(Statement s) {
         string retval = $"if ({translateExpr(s.expr)}) {{\n";
+        foreach (Statement c in s.children) {
+            retval += translateStatement(c);
+        }
+        retval += "}\n";
+        return retval;
+    }
+
+    string translateElifStatement(Statement s) {
+        string retval = $"else if ({translateExpr(s.expr)}) {{\n";
+        foreach (Statement c in s.children) {
+            retval += translateStatement(c);
+        }
+        retval += "}\n";
+        return retval;
+    }
+
+    string translateElseStatement(Statement s) {
+        string retval = $"else {{\n";
         foreach (Statement c in s.children) {
             retval += translateStatement(c);
         }

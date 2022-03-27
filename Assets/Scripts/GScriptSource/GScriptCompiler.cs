@@ -16,6 +16,8 @@ public class GScriptCompiler
     Regex rxBool = new Regex("(true|false)");
 
     const string KEY_IF = "if";
+    const string KEY_ELIF = "elif";
+    const string KEY_ELSE = "else";
     const string KEY_WHILE = "while";
     const string KEY_WAIT = "wait";
     const string KEY_BOOL = "bool";
@@ -60,7 +62,6 @@ public class GScriptCompiler
         List<Token> tokens = tokenize(program);
         List<Statement> statements = parse(tokens.ToArray());
         traverse(statements);
-        Debug.Log("?");
         if (!exceptions.empty()) {
             exceptions.printAllExceptions();
         }
@@ -236,6 +237,12 @@ public class GScriptCompiler
                 if (buf == KEY_IF) {                                        // if
                     tokens.Add(new Token(TType.KEY_IF,buf,new int[2] {xLoc, yLoc}));
                 }
+                else if (buf == KEY_ELIF) {                                 // elif
+                    tokens.Add(new Token(TType.KEY_ELIF,buf,new int[2] {xLoc, yLoc}));
+                }
+                else if (buf == KEY_ELSE) {                                 // else
+                    tokens.Add(new Token(TType.KEY_ELSE,buf,new int[2] {xLoc, yLoc}));
+                }
                 else if (buf == KEY_WHILE) {                                // while
                     tokens.Add(new Token(TType.KEY_WHILE,buf,new int[2] {xLoc, yLoc}));
                 }
@@ -339,6 +346,12 @@ public class GScriptCompiler
             case SType.IF:
                 traverseIfStatement(s);
                 break;
+            case SType.ELIF:
+                traverseElifStatement(s);
+                break;
+            case SType.ELSE:
+                traverseElseStatement(s);
+                break;
             case SType.VAR_DEF:
                 traverseVarDefStatement(s);
                 break;
@@ -370,6 +383,18 @@ public class GScriptCompiler
             // ERROR: if statement does not have a boolean expression.
             exceptions.log($"Error (ln: {s.expr.lineNum}): if statement argument must be a bool expression.");
         }
+    }
+
+    void traverseElifStatement(Statement s) {
+        traverseExpr(s.expr);
+        if (s.expr.vType != VType.BOOL) {
+            // ERROR: if statement does not have a boolean expression.
+            exceptions.log($"Error (ln: {s.expr.lineNum}): if statement argument must be a bool expression.");
+        }
+    }
+
+    void traverseElseStatement(Statement s) {
+        // Do nothing?
     }
 
     void traverseVarDefStatement(Statement s) {
@@ -839,6 +864,8 @@ public enum TType {
     WS_TAB,
     WS_NEWLINE,
     KEY_IF,
+    KEY_ELIF,
+    KEY_ELSE,
     KEY_WHILE,
     KEY_WAIT,
     KEY_BOOL,

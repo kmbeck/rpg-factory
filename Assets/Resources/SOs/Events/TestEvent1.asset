@@ -17,5 +17,6 @@ MonoBehaviour:
   triggerFlagUniqueID: 
   parallel: 0
   script: "int a = 10\nint b = 20\nfloat c = 55.123\nint d = (a + b) * b\nstr test_msg
-    = \"This is a test message!\"\nif (b > a)\n    PRINT_MSG_TO_CONSOLE(test_msg)\nstr
-    s = \"save me!\""
+    = \"This is a test message!\"\nif (b > a)\n    PRINT_MSG_TO_CONSOLE(\"b > a\")\nelif
+    (a > b)\n    PRINT_MSG_TO_CONSOLE(\"a > b\")\nelse\n    PRINT_MSG_TO_CONSOLE(\"a
+    = b\")\n\nstr s = \"save me!\""
