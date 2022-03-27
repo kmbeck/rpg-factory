@@ -20,7 +20,6 @@ public class GScriptTranslator
         foreach (Statement s in program) {
             retval += translateStatement(s);
         }
-        Debug.Log(retval);
         return retval;
     }
 

@@ -435,7 +435,6 @@ public class Statement {
 }
 
 // One Node in an Expression Tree.
-// TODO: add pdepth/bdepth values for expressions?
 public class ExprNode {
     public string value;            // Used by Identifiers to denote name and Literals to denote value.
     public EType eType;             // The type of expression this is.

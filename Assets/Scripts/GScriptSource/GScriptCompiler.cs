@@ -38,7 +38,7 @@ public class GScriptCompiler
     const string OP_SUBRACTION = "-";
     const string OP_MULTIPLICATION = "*";
     const string OP_DIVISION = "/";
-    //const string op_Modulus = "%";
+    //TODO: const string op_Modulus = "%";
     const string OP_EQUALITY = "==";
     const string OP_NOTEQUALS = "!=";
     const string OP_GREATER = ">";
@@ -68,7 +68,8 @@ public class GScriptCompiler
         else {
             Debug.Log("Script validated successfully!");
             // TODO: translate call for debugging only!
-            string cCode = translate(statements);
+            string csCode = translate(statements);
+            Debug.Log(csCode);
         }
     }
 
@@ -224,7 +225,6 @@ public class GScriptCompiler
             }
             else if (rxIdentifier.Match(buf).Success) {                 // ALL IDENTIFIERS & KEYWORDS.
                 // Read up until end of current Identifier.
-                // TODO: There are better was to do it than looping (RE.INDEX/RE.LENGTH)...
                 // Check to ensure we havent reached end of input.
                 while (idx + 1 < inputChars.Length &&
                         rxIdentifier.Match(inputChars[idx + 1].ToString()).Success) {
@@ -268,7 +268,6 @@ public class GScriptCompiler
             }
             else if (rxNumeral.Match(buf).Success) {                    // INT & FLOAT LITERAL
                 // Read up until end of current INT or FLOAT LITERAL.
-                // TODO: There are better was to do it than looping (RE.INDEX/RE.LENGTH)...
                 while (idx + 1 < inputChars.Length &&
                         rxNumeral.Match(inputChars[idx + 1].ToString()).Success) {
                     idx++;
@@ -286,7 +285,6 @@ public class GScriptCompiler
             }
             else if (rxString.Match(buf).Success) {                     // STRING LITERAL
                 // Read up until end of current STRING LITERAL.
-                // TODO: There are better was to do it than looping (RE.INDEX/RE.LENGTH)...
                 while (inputChars[idx + 1] != '\"') {   // Break out before closing "
                     idx++;
                     xLoc++;
@@ -367,7 +365,6 @@ public class GScriptCompiler
         }
 
         // Traverse over any children of this statementhasVar
-        // TODO: should this be done here or in a wrapper function???
         foreach(Statement child in s.children) {
             traverseStatement(child);
         }
@@ -751,9 +748,6 @@ public class Scope {
 public class ScopeVar {
     public string name;
     public VType type;
-    //TODO: add List<ScopeVar> parameters in case this particular ScopeVar is a function.
-    // Do functions need to be separate?
-    // type would be RETURN type of the function...
 
     public ScopeVar(string _name, VType _type) {
         name = _name;
