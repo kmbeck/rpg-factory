@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,13 +17,13 @@ public abstract class GScriptEventLibrary : MonoBehaviour
 		int d = (a + b) * b;
 		string test_msg = "This is a test message!";
 		if (b > a) {
-			EventInterface.PRINT_MSG_TO_CONSOLE("b > a");
+			EventInterface.DEBUG_PRINT("b > a");
 		}
 		else if (a > b) {
-			EventInterface.PRINT_MSG_TO_CONSOLE("a > b");
+			EventInterface.DEBUG_PRINT("a > b");
 		}
 		else {
-			EventInterface.PRINT_MSG_TO_CONSOLE("a = b");
+			EventInterface.DEBUG_PRINT("a = b");
 		}
 		string s = "save me!";
 	}
@@ -39,5 +38,4 @@ public abstract class GScriptEventLibrary : MonoBehaviour
 		string b = "10";
 		EventInterface.PRINT_MSG_TO_CONSOLE(a);
 	}
-
 }
