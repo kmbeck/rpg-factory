@@ -63,6 +63,25 @@ using UnityEngine;
 
 public abstract class GScriptEventLibrary : MonoBehaviour
 {
+    public static GScriptEventLibrary inst;
+
+    void Start() {
+        if (inst != null) {
+            Destroy(this);
+        }
+        else {
+            inst = this;
+        }
+    }
+
+    void Awake() {
+        if (inst != null) {
+            Destroy(this);
+        }
+        else {
+            inst = this;
+        }
+    }
 ";
         string fileFooterCode = "}";
         string outStr = fileHeaderCode + bodyCode + fileFooterCode;

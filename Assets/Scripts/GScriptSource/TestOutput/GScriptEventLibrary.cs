@@ -11,6 +11,25 @@ using UnityEngine;
 
 public abstract class GScriptEventLibrary : MonoBehaviour
 {
+    public static GScriptEventLibrary inst;
+
+    void Start() {
+        if (inst != null) {
+            Destroy(this);
+        }
+        else {
+            inst = this;
+        }
+    }
+
+    void Awake() {
+        if (inst != null) {
+            Destroy(this);
+        }
+        else {
+            inst = this;
+        }
+    }
 public static void EVENT_TESTEVENT1() {
 int a = 10;
 int b = 20;
@@ -27,6 +46,10 @@ else {
 	EventInterface.DEBUG_PRINT("a = b");
 }
 string s = "save me!";
+}
+
+public static void EVENT_TESTEVENT2() {
+EventInterface.DEBUG_PRINT("Aaskdljfas;kf");
 }
 
 public static void EVENT_TESTEVENT22() {
