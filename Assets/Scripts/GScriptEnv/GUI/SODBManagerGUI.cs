@@ -16,7 +16,7 @@ public class SODBManagerGUI : EditorWindow
     // specific SO in the project. Relies on same data object that the validator &
     // compiler will eventually rely on to check for broken references.
 
-    [MenuItem("Window/SODB Manager")]
+    [MenuItem("Window/GScript/SODB Manager")]
     public static void ShowWindow() {
         SODBManagerGUI wnd = GetWindow<SODBManagerGUI>();
         wnd.titleContent = new GUIContent("SODB Manager");

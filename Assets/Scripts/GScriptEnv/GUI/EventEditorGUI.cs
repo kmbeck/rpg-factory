@@ -13,7 +13,7 @@ public class EventEditorGUI : EditorWindow
     //TODO: Variablize filepaths in this script!
     //TODO: listview event library not using unityFont I am setting???
 
-    [MenuItem("Window/Event Editor")]
+    [MenuItem("Window/GScript/Event Editor")]
     public static void ShowWindow()
     {
         EventEditorGUI wnd = GetWindow<EventEditorGUI>();
