@@ -31,6 +31,7 @@ public class EventEditorGUI : EditorWindow
         // Register callbacks.
         root.Q<Button>("btn_SaveScript").clicked += onSaveClicked;
         root.Q<Button>("btn_ValidateScript").clicked += onValidateClicked;
+        root.Q<Button>("btn_CompileAllScripts").clicked += onComipleAllClicked;
         root.Q<Button>("btn_Load").clicked += onLoadClicked;
         root.Q<Button>("btn_Refresh").clicked += updateEventLibraryView;
 
@@ -54,7 +55,11 @@ public class EventEditorGUI : EditorWindow
     // Validate the current contents of the Event Script text field.
     public void onValidateClicked() {
         GScriptCompiler compiler = new GScriptCompiler();
-        //compiler.validate(root.Q<TextField>("tf_EventScript").value);
+        compiler.validate(root.Q<TextField>("tf_EventScript").value);
+    }
+
+    public void onComipleAllClicked() {
+        GScriptCompiler compiler = new GScriptCompiler();
         compiler.compileAllEvents();
     }
 

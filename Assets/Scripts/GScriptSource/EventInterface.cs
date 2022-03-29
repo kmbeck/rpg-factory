@@ -79,4 +79,20 @@ public class EventInterface : MonoBehaviour
     public static void WRITE_TO_FILE(string fp, string text) {
 
     }
+
+    public static void START_DIALOGUE() {
+        // Start a dialogue sesion with THIS object.
+    }
+
+    public static void DIALOGUE_MESSAGE(string message, bool replace=true) {
+        // Display this string  in the current dialogue window.
+        //      replace tells us weather we want to
+    }
+
+    public static string DIALOGUE_OPTION(string message, List<string> options) {
+        // Display this option.
+
+        // return selection by player...?
+        return "";
+    }
 }

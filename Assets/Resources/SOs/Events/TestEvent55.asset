@@ -20,4 +20,4 @@ MonoBehaviour:
 
     str b = "10"
 
-    DEBUG_LOG(a)'
+    DEBUG_PRINT(a)'

@@ -23,12 +23,12 @@ public class GScriptCompiler
             Debug.Log("Script validated successfully!");
             // TODO: translate call for debugging only!
             string csCode = translate(statements);
-            Debug.Log(csCode);
         }
     }
 
     // Compile a single event and return as a C# function.
     public string compileEvent(SOEvent e) {
+        Debug.Log($"Compiling Event Script: {e.uniqueID}");
         List<Token> tokens = tokenize(e.script);
         List<Statement> statements = parse(tokens.ToArray());
         traverse(statements);
@@ -345,7 +345,6 @@ public class VarContext {
     public VarContext() {
         scopes = new List<Scope>();
         initGlobalScope();
-        Debug.Log(this.ToString());
     }
 
     // Push a new Scope.

@@ -20,6 +20,7 @@
             <ui:VisualElement name="container_EditorFooterButtons" style="align-items: flex-start; flex-direction: row; justify-content: space-around; margin-bottom: 3px;">
                 <ui:Button text="Save" display-tooltip-when-elided="true" name="btn_SaveScript" tooltip="Save Event Script text to a .rfes file." style="width: 35%; align-items: flex-start; min-height: 16px;" />
                 <ui:Button text="Validate" display-tooltip-when-elided="true" name="btn_ValidateScript" tooltip="Checks for common errors in Event Script." style="width: 35%; align-items: flex-start; min-height: 16px;" />
+                <ui:Button text="Compile All" display-tooltip-when-elided="true" name="btn_CompileAllScripts" tooltip="Compile all scripts in the Event Library." style="background-color: rgb(106, 29, 23); -unity-background-image-tint-color: rgba(255, 255, 255, 255);" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
