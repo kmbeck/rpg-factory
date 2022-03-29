@@ -5,7 +5,7 @@
         <ui:Toggle label="Parallel:" name="chk_Parallel" style="-unity-font-style: bold;" />
     </ui:VisualElement>
     <ui:VisualElement name="container_LowerElements" style="flex-direction: row-reverse; width: 100%; margin-top: 20px; flex-grow: 1;">
-        <ui:VisualElement name="container_EventListView" style="height: auto; margin-top: 0; margin-bottom: 0; align-items: stretch; flex-direction: column; margin-left: 0; margin-right: 0; width: 30%;">
+        <ui:VisualElement name="container_EventListView" style="height: auto; margin-top: 0; margin-bottom: 0; align-items: stretch; flex-direction: column; margin-left: 0; margin-right: 0; width: 30%; max-width: 300px;">
             <ui:Label text="Event Library:" display-tooltip-when-elided="true" name="lbl_EventList" style="margin-left: 3px; padding-right: 0; padding-left: 0; margin-top: 0; -unity-font-style: bold;" />
             <ui:VisualElement name="container_EditorFooterButtonsRight" style="align-items: flex-start; flex-direction: row; justify-content: space-around; margin-bottom: 3px;">
                 <ui:Button text="Load" display-tooltip-when-elided="true" name="btn_Load" tooltip="Checks for common errors in Event Script." style="width: 35%; align-items: flex-start; min-height: 16px;" />
@@ -20,7 +20,7 @@
             <ui:VisualElement name="container_EditorFooterButtons" style="align-items: flex-start; flex-direction: row; justify-content: space-around; margin-bottom: 3px;">
                 <ui:Button text="Save" display-tooltip-when-elided="true" name="btn_SaveScript" tooltip="Save Event Script text to a .rfes file." style="width: 35%; align-items: flex-start; min-height: 16px;" />
                 <ui:Button text="Validate" display-tooltip-when-elided="true" name="btn_ValidateScript" tooltip="Checks for common errors in Event Script." style="width: 35%; align-items: flex-start; min-height: 16px;" />
-                <ui:Button text="Compile All" display-tooltip-when-elided="true" name="btn_CompileAllScripts" tooltip="Compile all scripts in the Event Library." style="background-color: rgb(106, 29, 23); -unity-background-image-tint-color: rgba(255, 255, 255, 255);" />
+                <ui:Button text="Compile All" display-tooltip-when-elided="true" name="btn_CompileAllScripts" tooltip="Compile all scripts in the Event Library." style="background-color: rgb(106, 29, 23); -unity-background-image-tint-color: rgb(255, 255, 255);" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
