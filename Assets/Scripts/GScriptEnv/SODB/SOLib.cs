@@ -33,16 +33,17 @@ where D : SOOrigin
             string[] splitstr = files[i].Split('/');
             files[i] = splitstr[splitstr.Length - 1].Split('.')[0];
             tgtFiles.Add(files[i]);
+            Debug.Log(files[i]);
         }
         
-        // Generate Objects based on ScriptableObjects found in SOs/Equipment.
+        // Generate Objects based on ScriptableObjects
         foreach (string fname in tgtFiles) {
             D data = Resources.Load(SODir + "/" + fname, typeof(D)) as D;
             lib[data.uniqueID] = data;
         }
     }
 
-    // Get an Instantated GameObject of type O using data at key.
+    // Get an Instantiated GameObject of type O using data at key.
     public O GetInstance<O>(string key) where O : ObjectOrigin<D> {
         O newInstance = MonoBehaviour.Instantiate(
             Resources.Load(SODB.GetMetadataField(typeof(O).ToString(), "default_prefab_fp"), 

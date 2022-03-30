@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6219076bcc746aa2281f893cf8edca69, type: 3}
-  m_Name: TestFlag
+  m_Name: TestFlag_003
   m_EditorClassIdentifier: 
-  uniqueID: TestFlag
+  uniqueID: TestFlag_003
   displayName: 
   dataType: 0
-  iVal: 987
+  iVal: 111111111
   sVal: 
   bVal: 0
   fVal: -1000000

@@ -85,7 +85,7 @@ public abstract class GScriptEventLibrary : MonoBehaviour
 ";
         string fileFooterCode = "}";
         string outStr = fileHeaderCode + bodyCode + fileFooterCode;
-        StreamWriter sw = new StreamWriter($"Assets/Scripts/GScriptSource/GeneratedCode/{outputFileName}");
+        StreamWriter sw = new StreamWriter($"Assets/Scripts/GScriptEnv/GScriptSource/GeneratedCode/{outputFileName}");
         sw.WriteLine(outStr);
         sw.Close();
     }

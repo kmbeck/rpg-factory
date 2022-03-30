@@ -1,10 +1,22 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <ui:VisualElement name="container_FlagEditor">
-        <ui:TextField picking-mode="Ignore" label="Unique ID:" value="-" text="-" name="tf_UniqueID" style="-unity-font-style: bold;" />
-        <uie:EnumField label="Data Type:" value="INT" name="enum_DataType" include-obsolete-values="false" style="-unity-font-style: bold;" />
-        <ui:Toggle label="Bool Value" name="chk_BoolVal" focusable="true" />
-        <ui:TextField picking-mode="Ignore" label="Text Field" value="filler text" />
-        <uie:IntegerField label="Int Field" value="0" />
-        <uie:FloatField label="Float Field" value="0" />
+    <ui:VisualElement name="container_Top" style="flex-direction: row; justify-content: space-between; align-items: stretch; height: 100%;">
+        <ui:VisualElement name="container_FlagEditorTop" style="width: 50%; height: 100%; justify-content: space-between;">
+            <ui:VisualElement name="container_FlagEditor" style="flex-direction: column; width: auto; align-items: stretch; height: auto; justify-content: space-between;">
+                <ui:TextField picking-mode="Ignore" label="Unique ID:" name="tf_UniqueID" style="-unity-font-style: bold;" />
+                <uie:EnumField label="Data Type:" value="INT" name="enum_DataType" include-obsolete-values="false" style="-unity-font-style: bold;" />
+                <ui:Toggle label="Bool Value:" name="chk_BoolVal" focusable="true" style="-unity-font-style: bold;" />
+                <ui:TextField picking-mode="Ignore" label="String Value:" name="tf_StrVal" style="-unity-font-style: bold;" />
+                <uie:IntegerField label="Int Field:" value="0" name="int_IntVal" style="-unity-font-style: bold;" />
+                <uie:FloatField label="Float Field:" value="0" name="float_FloatVal" style="-unity-font-style: bold;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="container_FooterButtonsLeft" style="align-items: center; justify-content: flex-end; min-height: 20px;">
+                <ui:Button text="Save" display-tooltip-when-elided="true" name="btn_Save" style="min-height: 16px; width: 50%;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="container_FlagListView" style="width: 50%; max-width: none; align-items: stretch;">
+            <ui:VisualElement name="container_FooterButtonsRight" style="align-items: center; width: 100%;">
+                <ui:Button text="Load" display-tooltip-when-elided="true" name="btn_Load" style="min-height: 16px; width: 50%;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

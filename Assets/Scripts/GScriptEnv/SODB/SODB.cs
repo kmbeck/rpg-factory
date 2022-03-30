@@ -66,6 +66,16 @@ public class SODB : MonoBehaviour
         Debug.Log($"Generated {LIB_EVENT.lib.Count} Event Objects.");
     }
 
+    // Same as InitLib() but refreshes flag lib ONLY.
+    public static void InitFlagLib() {
+        LoadObjDataJSON();
+
+        // * * * * * Flags * * * * *
+        LIB_FLAG = new SOFlagLib<SOFlag>();
+        LIB_FLAG.LoadLib(objMetadata["SOFlag"]["default_so_dir"].ToString());
+        Debug.Log($"Loaded {LIB_FLAG.lib.Count} Flag Objects.");
+    }
+
     // Load the ObjectMetadata.json file and use it to generate a library for all
     // desired ScriptableObject data.
     public static void InitLibs() {

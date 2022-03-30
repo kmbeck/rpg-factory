@@ -107,7 +107,7 @@ public class EventEditorGUI : EditorWindow
         listView.showAlternatingRowBackgrounds = AlternatingRowBackground.All;
         listView.style.flexGrow = 1.0f;
         listView.style.fontSize = 14;
-        listView.style.unityFont = AssetDatabase.LoadAssetAtPath<Font>("Assets/Resources/Fonts/Source Code Pro");
+        listView.style.unityFont = AssetDatabase.LoadAssetAtPath<Font>("Assets/Resources/Fonts/SourceCodePro-Regular");
         listView.onItemChosen += obj => onLoadClicked();
         root.Q<VisualElement>("container_EventListView").Add(listView);
         listView.PlaceBehind(root.Q<VisualElement>("container_EditorFooterButtonsRight"));
@@ -116,7 +116,7 @@ public class EventEditorGUI : EditorWindow
     // Helps construct Event Library View.
     private Label createEventLibraryLabel() {
         Label newLabel = new Label();
-        newLabel.style.unityFont = AssetDatabase.LoadAssetAtPath<Font>("Assets/Resources/Fonts/Source Code Pro");
+        newLabel.style.unityFont = AssetDatabase.LoadAssetAtPath<Font>("Assets/Resources/Fonts/SourceCodePro-Regular");
         return newLabel;
     }
 }
