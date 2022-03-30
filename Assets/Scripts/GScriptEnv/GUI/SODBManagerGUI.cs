@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-[ExecuteInEditMode]
 public class SODBManagerGUI : EditorWindow
 {
     public VisualTreeAsset uxml;

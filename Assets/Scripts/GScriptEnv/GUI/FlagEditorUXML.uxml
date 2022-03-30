@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="container_FlagEditor">
+        <ui:TextField picking-mode="Ignore" label="Unique ID:" value="-" text="-" name="tf_UniqueID" style="-unity-font-style: bold;" />
+        <uie:EnumField label="Data Type:" value="INT" name="enum_DataType" include-obsolete-values="false" style="-unity-font-style: bold;" />
+        <ui:Toggle label="Bool Value" name="chk_BoolVal" focusable="true" />
+        <ui:TextField picking-mode="Ignore" label="Text Field" value="filler text" />
+        <uie:IntegerField label="Int Field" value="0" />
+        <uie:FloatField label="Float Field" value="0" />
+    </ui:VisualElement>
+</ui:UXML>

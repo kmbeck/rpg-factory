@@ -67,9 +67,7 @@ public class EventEditorGUI : EditorWindow
         if (root.Q<ListView>("listview_EventLibrary") == null) {
             return;
         }
-
         string selectedVal = (root.Q<ListView>("listview_EventLibrary").selectedItem.ToString());
-
         if (SODB.LIB_EVENT.lib.ContainsKey(selectedVal)) {
             SOEvent evt = SODB.LIB_EVENT.lib[selectedVal];
             root.Q<TextField>("tf_UniqueID").value = evt.uniqueID;
