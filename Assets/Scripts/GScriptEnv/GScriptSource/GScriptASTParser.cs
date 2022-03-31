@@ -7,7 +7,7 @@ using UnityEngine;
  * This object encapsulates functions that convert a Token[] to an Abstract
  * Syntax Tree (AST).
  * * * * */
-public class ASTParser {
+public class GScriptASTParser {
     
     private LexContext context;
     private int idx;        // Current index of the token list.
@@ -18,7 +18,7 @@ public class ASTParser {
     private List<Statement> program;
     private ExprNode curExpr;   // The last expression returned by parseExpr().
 
-    public ASTParser() {
+    public GScriptASTParser() {
 
     }
 
@@ -254,6 +254,7 @@ public class ASTParser {
                  cur.type == TType.OP_SUBTRACTION    ||
                  cur.type == TType.OP_MULTIPLICATION ||
                  cur.type == TType.OP_DIVISION       ||
+                 cur.type == TType.OP_MODULUS        ||
                  cur.type == TType.OP_EQUALITY       ||
                  cur.type == TType.OP_NOTEQUALS      ||
                  cur.type == TType.OP_GREATER        ||
@@ -522,6 +523,8 @@ public class ExprNode {
                 return "*";
             case TType.OP_DIVISION:
                 return "/";
+            case TType.OP_MODULUS:
+                return "%";
             case TType.OP_ADDITION:
                 return "+";
             case TType.OP_SUBTRACTION:

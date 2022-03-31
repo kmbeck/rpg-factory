@@ -38,6 +38,18 @@ public class EventInterface : MonoBehaviour
         Debug.Log(message);
     }
 
+    public static void DEBUG_PRINT(int val) {
+        Debug.Log(val);
+    }
+
+    public static void DEBUG_PRINT(float val) {
+        Debug.Log(val);
+    }
+
+    public static void DEBUG_PRINT(bool val) {
+        Debug.Log(val);
+    }
+
     // Set and Get flag for each possible type.
     public static void SET_INT_FLAG(string flagUniqueID, int newVal) {
         SODB.LIB_FLAG.SetFlag(flagUniqueID, newVal);

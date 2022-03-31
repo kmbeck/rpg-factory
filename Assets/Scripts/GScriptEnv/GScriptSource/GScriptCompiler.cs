@@ -99,7 +99,7 @@ public abstract class GScriptEventLibrary : MonoBehaviour
     // equivalent to the entire program.
     //      If an error is encountered while parsing, we must throw an error & return.
     List<Statement> parse(Token[] tokens) {
-        return new ASTParser().parse(tokens);
+        return new GScriptASTParser().parse(tokens);
     }
 
     // Traverse over our parsed Statements and ensure that there are no grammar

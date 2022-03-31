@@ -5,6 +5,8 @@ using UnityEngine.UIElements;
 using System;
 using System.IO;
 
+// TODO: when the player selects a type, reset and disable all fields that were
+// not equal to that type.
 public class FlagEditorGUI : EditorWindow
 {
     public VisualTreeAsset uxml;

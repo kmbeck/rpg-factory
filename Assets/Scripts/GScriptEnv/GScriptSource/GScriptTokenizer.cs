@@ -37,7 +37,7 @@ public class GScriptTokenizer
     const string OP_SUBRACTION = "-";
     const string OP_MULTIPLICATION = "*";
     const string OP_DIVISION = "/";
-    //TODO: const string op_Modulus = "%";
+    const string OP_MODULUS = "%";
     const string OP_EQUALITY = "==";
     const string OP_NOTEQUALS = "!=";
     const string OP_GREATER = ">";
@@ -111,6 +111,10 @@ public class GScriptTokenizer
             }
             else if (buf == OP_DIVISION) {                              // /
                 tokens.Add(new Token(TType.OP_DIVISION,buf,new int[2] {xLoc, yLoc}));
+                buf = "";
+            }
+            else if (buf == OP_MODULUS) {                               // %
+                tokens.Add(new Token(TType.OP_MODULUS,buf,new int[2] {xLoc, yLoc}));
                 buf = "";
             }
             else if (buf == OP_NEGATION) {                              // ! && !=
@@ -310,6 +314,7 @@ public enum TType {
     OP_INVERSE,
     OP_MULTIPLICATION,
     OP_DIVISION,
+    OP_MODULUS,
     OP_ADDITION,
     OP_SUBTRACTION,
     OP_LESS,

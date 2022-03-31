@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 915b68dcd035eebb69036b69950b7a85, type: 3}
+  m_Name: ModulusTest_01
+  m_EditorClassIdentifier: 
+  uniqueID: ModulusTest_01
+  displayName: 
+  triggerFlagUniqueID: 
+  parallel: 0
+  script: 'int a = 7 % 3
+
+    int b = 6 % 4
+
+    int c = 55 % 5
+
+
+    DEBUG_PRINT(a)
+
+    DEBUG_PRINT(b)
+
+    DEBUG_PRINT(c)'
