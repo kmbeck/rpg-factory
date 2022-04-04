@@ -30,20 +30,23 @@ public abstract class GScriptEventLibrary : MonoBehaviour
             inst = this;
         }
     }
+public static void EVENT_FLAGTEST_01() {
+EventInterface.DEBUG_PRINT(SODB.LIB_FLAG.GetFlagSTRINGVal("TestStrFlag_001"));
+SODB.LIB_FLAG.SetFlag("TestStrFlag_001", "New Value");
+EventInterface.DEBUG_PRINT(SODB.LIB_FLAG.GetFlagSTRINGVal("TestStrFlag_001"));
+}
+
 public static void EVENT_MODULUSTEST_01() {
 int a = 7 % 3;
 int b = 6 % 4;
 int c = 55 % 5;
-EventInterface.DEBUG_PRINT(a);
-EventInterface.DEBUG_PRINT(b);
-EventInterface.DEBUG_PRINT(c);
 }
 
 public static void EVENT_TESTEVENT1() {
 int a = 10;
 int b = 20;
 float c = 55.123f;
-int d = (a + b) * b;
+int d = a + b * b;
 string test_msg = "This is a test message!";
 if (b > a) {
 	EventInterface.DEBUG_PRINT("b > a");

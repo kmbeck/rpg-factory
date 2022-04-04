@@ -66,7 +66,13 @@ where D : SOFlag
         lib[id].fVal = val;
     }
 
-    public int GetFlagIVal(string id) {
+    public FlagDataType GetFlagDataType(string id) {
+        return lib[id].dataType;
+    }
+
+    // WARNING: these functions are referenced in code reflection!
+    // Their names should not be changed!!! (see GScriptTranslator.cs)
+    public int GetFlagINTVal(string id) {
         int val = lib[id].iVal;
         if (lib[id].dataType != FlagDataType.INT) {
             Debug.Log($"Warning: Get on int value from Flag {id}, but FlagDataType = {lib[id].dataType.ToString()}.");
@@ -78,7 +84,7 @@ where D : SOFlag
         return val;
     }
 
-    public string GetFlagSVal(string id) {
+    public string GetFlagSTRINGVal(string id) {
         string val = lib[id].sVal;
         if (lib[id].dataType != FlagDataType.STRING) {
             Debug.Log($"Warning: Get on string value from Flag {id}, but FlagDataType = {lib[id].dataType.ToString()}.");
@@ -89,7 +95,7 @@ where D : SOFlag
         return val;
     }
 
-    public bool GetFlagBVal(string id) {
+    public bool GetFlagBOOLVal(string id) {
         bool val = lib[id].bVal;
         // Probably don't need warning for false bool statements...
         if (lib[id].dataType != FlagDataType.BOOL) {
@@ -98,7 +104,7 @@ where D : SOFlag
         return val;
     }
 
-    public float GetFlagFVal(string id) {
+    public float GetFlagFLOATVal(string id) {
         float val = lib[id].fVal;
         if (lib[id].dataType != FlagDataType.FLOAT) {
             Debug.Log($"Warning: Get on float value from Flag {id}, but FlagDataType = {lib[id].dataType.ToString()}");

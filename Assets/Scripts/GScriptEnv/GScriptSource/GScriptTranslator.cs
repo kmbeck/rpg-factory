@@ -8,10 +8,9 @@ using UnityEngine;
 
 public class GScriptTranslator 
 {
-    TranslatorContext context;
 
     public GScriptTranslator() {
-        context = new TranslatorContext();
+
     }
 
     // Translate a GScript program into a string of C# code.
@@ -126,14 +125,131 @@ public class GScriptTranslator
     }
 
     string translateExpr(ExprNode e) {
-        return e.ToString();   
+        string retval = "";
+        switch (e.eType) {
+            case EType.IDENTIFIER:
+                retval += translateIdentifierExpr(e);
+                break;
+            case EType.LITERAL:
+                retval += translateLiteralExpr(e);
+                break;
+            case EType.FUNCTION:
+                retval += translateFunctionCallExpr(e);
+                break;
+            case EType.INDEXING:
+                retval += translateIndexingExpr(e);
+                break;
+            case EType.BINARY:
+                retval += translateBinaryExpr(e);
+                break;
+            case EType.UNARY:
+                retval += translateUnaryExpr(e);
+                break;
+        }
+        return retval;
     }
-}
 
-public class TranslatorContext {
-    int tdepth;
+    string translateIdentifierExpr(ExprNode e) {
+        return $"{e.value}";
+    }
 
-    public TranslatorContext() {
-        tdepth = 0;
+    string translateLiteralExpr(ExprNode e) {
+        if (e.vType == VType.FLOAT) {
+            return $"{e.value}f";
+        }
+        else {
+            return $"{e.value}";
+        }
+    }
+
+    string translateBinaryExpr(ExprNode e) {
+        // 'flib' special case.
+        if (e.children[0].eType == EType.INDEXING && 
+            e.children[0].children[0].value == "flib" &&
+            e.tType == TType.OP_ASSIGNMENT) {
+            return $"SODB.LIB_FLAG.SetFlag({e.children[0].children[1].value}, {translateExpr(e.children[1])})";
+        }
+        else {
+            return $"{translateExpr(e.children[0])} {translateTType(e.tType)} {translateExpr(e.children[1])}";
+        }
+    }
+
+    string translateUnaryExpr(ExprNode e) {
+        return $"{translateTType(e.tType)}{translateExpr(e.children[0])}";
+    }
+
+    string translateFunctionCallExpr(ExprNode e) {
+        string paramStr = "";
+        // Skip first child of expr which is the function identifier (i = 1).
+        for (int i = 1; i < e.children.Count; i++) {
+            paramStr += translateExpr(e.children[i]) + ",";
+        }
+        paramStr = paramStr.Remove(paramStr.Length - 1, 1);
+        return $"EventInterface.{translateExpr(e.children[0])}({paramStr})";
+    }
+
+    string translateIndexingExpr(ExprNode e) {
+        // 'flib' special case.
+        if (e.children[0].value == "flib") {
+            VType vType = VType.NONE;
+            switch (SODB.LIB_FLAG.GetFlagDataType(e.children[1].value.Replace("\"",""))) {
+                case FlagDataType.INT:
+                    vType = VType.INT;
+                    break;
+                case FlagDataType.STRING:
+                    vType = VType.STRING;
+                    break;
+                case FlagDataType.BOOL:
+                    vType = VType.BOOL;
+                    break;
+                case FlagDataType.FLOAT:
+                    vType = VType.FLOAT;
+                    break;
+            }
+            return $"SODB.LIB_FLAG.GetFlag{vType}Val({e.children[1].value})";
+        }
+        else {
+            return $"{translateExpr(e.children[0])}[{translateExpr(e.children[1])}]";
+        }
+    }
+
+    // Translate the input token into a string.
+    string translateTType(TType tType) {
+        switch (tType) {
+            case TType.OP_NEGATION:
+                return "!";
+            case TType.OP_INVERSE:
+                return "-";
+            case TType.OP_MULTIPLICATION:
+                return "*";
+            case TType.OP_DIVISION:
+                return "/";
+            case TType.OP_MODULUS:
+                return "%";
+            case TType.OP_ADDITION:
+                return "+";
+            case TType.OP_SUBTRACTION:
+                return "-";
+            case TType.OP_LESS:
+                return "<";
+            case TType.OP_LESSOREQUAL:
+                return "<=";
+            case TType.OP_GREATER:
+                return ">";
+            case TType.OP_GREATEROREQUAL:
+                return ">=";
+            case TType.OP_EQUALITY:
+                return "==";
+            case TType.OP_NOTEQUALS:
+                return "!=";
+            case TType.OP_AND:
+                return "&&";
+            case TType.OP_OR:
+                return "||";
+            case TType.OP_ASSIGNMENT:
+                return "=";
+        }
+        // Error here?
+        return "";
     }
 }

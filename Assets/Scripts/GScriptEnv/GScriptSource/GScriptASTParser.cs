@@ -469,88 +469,6 @@ public class ExprNode {
         }
         return cur;
     }
-
-    // Gives us a string representation of the expression depending on it's EType.
-    public override string ToString() { 
-        string retval = "";
-        switch (eType) {
-            case EType.IDENTIFIER:
-                retval = $"{value}";
-                break;
-            case EType.LITERAL:
-                if (vType == VType.FLOAT) {
-                    retval = $"{value}f";
-                }
-                else {
-                    retval = $"{value}";
-                }
-                break;
-            case EType.INDEXING:
-                retval = $"{children[0].ToString()}[{children[1].ToString()}]";
-                break;
-            case EType.FUNCTION:
-                string paramStr = "";
-                for(int i = 1; i < children.Count; i++) {
-                    paramStr += children[i].ToString() + ",";
-                }
-                paramStr = paramStr.Remove(paramStr.Length - 1, 1);
-                retval = $"EventInterface.{children[0].ToString()}({paramStr})";
-                break;
-            case EType.BINARY:
-                retval = $"{children[0].ToString()} {translateTType()} {children[1].ToString()}";
-                break;
-            case EType.UNARY:
-                retval = $"{translateTType()}{children[0].ToString()}";
-                break;
-            case EType.NONE:
-                retval = "";
-                break;
-        }
-        if (enclosed) {
-            retval = "(" + retval + ")";
-        }
-        return retval;
-    }
-
-    // Translate the input token into a string.
-    string translateTType() {
-        switch (tType) {
-            case TType.OP_NEGATION:
-                return "!";
-            case TType.OP_INVERSE:
-                return "-";
-            case TType.OP_MULTIPLICATION:
-                return "*";
-            case TType.OP_DIVISION:
-                return "/";
-            case TType.OP_MODULUS:
-                return "%";
-            case TType.OP_ADDITION:
-                return "+";
-            case TType.OP_SUBTRACTION:
-                return "-";
-            case TType.OP_LESS:
-                return "<";
-            case TType.OP_LESSOREQUAL:
-                return "<=";
-            case TType.OP_GREATER:
-                return ">";
-            case TType.OP_GREATEROREQUAL:
-                return ">=";
-            case TType.OP_EQUALITY:
-                return "==";
-            case TType.OP_NOTEQUALS:
-                return "!=";
-            case TType.OP_AND:
-                return "&&";
-            case TType.OP_OR:
-                return "||";
-            case TType.OP_ASSIGNMENT:
-                return "=";
-        }
-        // Error here?
-        return "";
-    }
 }
 
 // Enum defines all types of Statements.
@@ -568,7 +486,7 @@ public enum SType {
 
 // Enum defines all types of Exprssions.
 public enum EType {
-    EXPRESION,
+    EXPRESSION,
     IDENTIFIER,
     LITERAL,
     FUNCTION,

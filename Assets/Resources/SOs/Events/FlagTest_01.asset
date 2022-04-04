@@ -10,14 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 915b68dcd035eebb69036b69950b7a85, type: 3}
-  m_Name: ModulusTest_01
+  m_Name: FlagTest_01
   m_EditorClassIdentifier: 
-  uniqueID: ModulusTest_01
+  uniqueID: FlagTest_01
   displayName: 
   triggerFlagUniqueID: 
   parallel: 0
-  script: 'int a = 7 % 3
+  script: 'DEBUG_PRINT(flib["TestStrFlag_001"])
 
-    int b = 6 % 4
 
-    int c = 55 % 5'
+    flib["TestStrFlag_001"] = "New
+    Value"
+
+
+    DEBUG_PRINT(flib["TestStrFlag_001"])'

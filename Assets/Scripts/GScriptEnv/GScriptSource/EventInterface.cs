@@ -38,51 +38,6 @@ public class EventInterface : MonoBehaviour
         Debug.Log(message);
     }
 
-    public static void DEBUG_PRINT(int val) {
-        Debug.Log(val);
-    }
-
-    public static void DEBUG_PRINT(float val) {
-        Debug.Log(val);
-    }
-
-    public static void DEBUG_PRINT(bool val) {
-        Debug.Log(val);
-    }
-
-    // Set and Get flag for each possible type.
-    public static void SET_INT_FLAG(string flagUniqueID, int newVal) {
-        SODB.LIB_FLAG.SetFlag(flagUniqueID, newVal);
-    }
-
-    public static int GET_INT_FLAG(string flagUniqueID) {
-        return SODB.LIB_FLAG.GetFlagIVal(flagUniqueID);
-    }
-
-    public static void SET_STRING_FLAG(string flagUniqueID, string newVal) {
-        SODB.LIB_FLAG.SetFlag(flagUniqueID, newVal);
-    }
-
-    public static string GET_STRING_FLAG(string flagUniqueID) {
-        return SODB.LIB_FLAG.GetFlagSVal(flagUniqueID);
-    }
-
-    public static void SET_BOOL_FLAG(string flagUniqueID, bool newVal) {
-        SODB.LIB_FLAG.SetFlag(flagUniqueID, newVal);
-    }    
-    
-    public static bool GET_BOOL_FLAG(string flagUniqueID) {
-        return SODB.LIB_FLAG.GetFlagBVal(flagUniqueID);
-    }
-
-    public static void SET_FLOAT_FLAG(string flagUniqueID, float newVal) {
-        SODB.LIB_FLAG.SetFlag(flagUniqueID, newVal);
-    }
-
-    public static float GET_FLOAT_FLAG(string flagUniqueID) {
-        return SODB.LIB_FLAG.GetFlagFVal(flagUniqueID);
-    }
-
     // Ideas...
     public static void LOAD_SCENE(string name) {
 

@@ -66,7 +66,7 @@ public class SODB : MonoBehaviour
         Debug.Log($"Generated {LIB_EVENT.lib.Count} Event Objects.");
     }
 
-    // Same as InitLib() but refreshes flag lib ONLY.
+    // Same as InitLib() but initializes flag lib ONLY.
     public static void InitFlagLib() {
         LoadObjDataJSON();
 

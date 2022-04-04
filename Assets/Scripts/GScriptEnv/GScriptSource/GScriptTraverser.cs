@@ -133,7 +133,7 @@ public class GScriptTraverser
             case EType.BINARY:
                 traverseBinaryExpr(e);
                 break;
-            case EType.EXPRESION:
+            case EType.EXPRESSION:
                 break;
             case EType.FUNCTION:
                 traverseFunctionCallExpr(e);
@@ -348,7 +348,8 @@ public class VarContext {
         ScopeVar[] vars = ctxr.getContextualizedScopeVars<SODB>();
         foreach (ScopeVar v in vars) { addVar(v); }
 
-        // TODO: Add 'flib' to scope as var?
+        // TODO: VType needs to be changed here.
+        addVar(new ScopeVar("flib",VType.NONE));
 
         ScopeFunc[] funcs = ctxr.getContextualizedScopeFuncs<EventInterface>();
         foreach (ScopeFunc f in funcs) { addFunc(f); }
