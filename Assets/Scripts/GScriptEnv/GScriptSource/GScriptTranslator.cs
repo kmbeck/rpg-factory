@@ -91,22 +91,16 @@ public class GScriptTranslator
 
     string translateVarDefStatement(Statement s) {
         string retval = "";
-        switch(s.varDefVType) {
-            case VType.BOOL:
-                retval += "bool";
-                break;
-            case VType.INT:
-                retval += "int";
-                break;
-            case VType.FLOAT:
-                retval += "float";
-                break;
-            case VType.STRING:
-                retval += "string";
-                break;
+        retval += translateVType(s.varDefVType);
+        if (s.varDefVType == VType.LIST) {
+            retval += $"<{translateVType(s.listElementVType)}>";
+            retval += $" new List<{translateVType(s.listElementVType)}>()";
+            // TODO: initialize list with a new value???
         }
-        retval += " ";
-        retval += translateExpr(s.expr) + ";\n";
+        else {
+            retval += " ";
+            retval += translateExpr(s.expr) + ";\n";
+        }
         return retval;
     }
 
@@ -162,6 +156,10 @@ public class GScriptTranslator
         }
     }
 
+    string translateListLiteralExpr(ExprNode e) {
+        return "";
+    }
+
     string translateBinaryExpr(ExprNode e) {
         // 'flib' special case.
         if (e.children[0].eType == EType.INDEXING && 
@@ -213,7 +211,7 @@ public class GScriptTranslator
         }
     }
 
-    // Translate the input token into a string.
+    // Translate the input token into a string. NOT ALL TOKENS ARE IN HERE!!!
     string translateTType(TType tType) {
         switch (tType) {
             case TType.OP_NEGATION:
@@ -249,7 +247,26 @@ public class GScriptTranslator
             case TType.OP_ASSIGNMENT:
                 return "=";
         }
-        // Error here?
+        //TODO: Error here?
+        return "";
+    }
+
+    // Translate input vType into valid C# equivalent. 
+    // VType.LIST is returned as just "List".
+    string translateVType(VType vType) {
+        switch(vType) {
+            case VType.INT:
+                return "int";
+            case VType.BOOL:
+                return "bool";
+            case VType.FLOAT:
+                return "float";
+            case VType.STRING:
+                return "string";
+            case VType.LIST:
+                return "List";
+        }
+        //TODO: Error here?
         return "";
     }
 }

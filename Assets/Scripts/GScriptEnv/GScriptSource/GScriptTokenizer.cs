@@ -23,6 +23,7 @@ public class GScriptTokenizer
     const string KEY_INT = "int";
     const string KEY_STR = "str";
     const string KEY_FLOAT = "float";
+    const string KEY_LIST = "list";
     const string WS_SPACE = " ";
     const string WS_NEWLINE = "\n";
     const string WS_TAB = "\t";
@@ -235,6 +236,9 @@ public class GScriptTokenizer
                 else if (buf == KEY_STR) {                                  // str
                     tokens.Add(new Token(TType.KEY_STR,buf,new int[2] {xLoc, yLoc}));
                 }
+                else if (buf == KEY_LIST) {                                 // list
+                    tokens.Add(new Token(TType.KEY_LIST,buf,new int[2] {xLoc, yLoc}));
+                }
                 else {                                                      // IDENTIFIER
                     tokens.Add(new Token(TType.IDENTIFIER,buf,new int[2] {xLoc, yLoc}));
                 }
@@ -338,6 +342,7 @@ public enum TType {
     KEY_FLOAT,
     KEY_INT,
     KEY_STR,
+    KEY_LIST,
     IDENTIFIER,
     BOOL_LITERAL,
     FLOAT_LITERAL,

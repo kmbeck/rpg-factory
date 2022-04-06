@@ -10,9 +10,8 @@ using UnityEngine;
 public class GScriptASTParser {
     
     private LexContext context;
-    private int idx;        // Current index of the token list.
-    private Token[] tokens;
-    private Token start;    // The token that the pack starts with 
+    private int idx;        // Current index of the token list.  private Token[] tokens;
+    private Token[] tokens; // Token buffer we are parsing.
     private Token cur;      // The token we are looking at.
     private Token next;     // The token after cur.
     private List<Statement> program;
@@ -126,9 +125,9 @@ public class GScriptASTParser {
             eatEOS();
             return s;
         }
-        else if (next.type == TType.KEY_BOOL ||
-                 next.type == TType.KEY_INT ||
-                 next.type == TType.KEY_FLOAT ||
+        else if (next.type == TType.KEY_BOOL    ||
+                 next.type == TType.KEY_INT     ||
+                 next.type == TType.KEY_FLOAT   ||
                  next.type == TType.KEY_STR) {
             Statement s = new Statement(SType.VAR_DEF);
             switch (next.type) {
@@ -156,6 +155,28 @@ public class GScriptASTParser {
             s.tdepth = context.tdepth;
             eatEOS();
             return s;
+        }
+        else if (next.type == TType.KEY_LIST) {
+            Statement s = new Statement(SType.VAR_DEF);
+            s.varDefVType = VType.LIST;
+            eatTokens(2);   // Eat next keyword and opening '<'
+            switch (next.type) {
+                case TType.KEY_BOOL:
+                    s.listElementVType = VType.BOOL;
+                    break;
+                case TType.KEY_INT:
+                    s.listElementVType = VType.INT;
+                    break;
+                case TType.KEY_FLOAT:
+                    s.listElementVType = VType.FLOAT;
+                    break;
+                case TType.KEY_STR:
+                    s.listElementVType = VType.STRING;
+                    break;
+            }
+            eatTokens(2);   // Eat next keyword and closing '>'
+            s.expr = parseAndGetExpression();
+            eatEOS();
         }
         else {
             Statement s = new Statement(SType.EXPR);
@@ -217,7 +238,7 @@ public class GScriptASTParser {
                 ExprNode expr = new ExprNode(EType.BINARY);
                 expr.tType = TType.OP_ASSIGNMENT;
                 expr.addChild(curExpr);
-                eatTokens();    // Eat '=' token.
+                eatTokens();              // Eat '=' token.
                 parseExpression();
                 expr.addChild(curExpr);
                 curExpr = expr;
@@ -315,7 +336,21 @@ public class GScriptASTParser {
             context.pdepth--;
             return;
         }
-
+        // '[' and ']' encountered (other than an indexing expression).
+        else if (cur.type == TType.L_BRACKET) {
+            // do stuff
+            context.bdepth++;
+            while (cur.type != TType.R_BRACKET) {
+                parseExpression();
+            }
+            curExpr.enclosed = true;    // should enclosed only be used for parens?
+            context.bdepth--;
+            return;
+        }
+        else if (cur.type == TType.R_BRACKET) {
+            context.bdepth--;
+            return;
+        }
         // Check if we have reached end of a statement...
         if ((next.type == TType.WS_NEWLINE && !context.enclosed()) || reachedEOF()) {
             return;
@@ -413,6 +448,8 @@ public class Statement {
 
     // Only used in VAR_DEF statements. Tells us what type the new var should be.
     public VType varDefVType;
+    // Only used in VAR_DEF statements defining lists. Tells us what type the list holds.
+    public VType listElementVType;
 
     public Statement(SType _type) {
         type = _type;
@@ -420,6 +457,7 @@ public class Statement {
         children = new List<Statement>();
         tdepth = 0;
         varDefVType = VType.NONE;
+        listElementVType = VType.NONE;
     }
 
     public override string ToString()
@@ -443,6 +481,7 @@ public class ExprNode {
     public List<ExprNode> children;
     public ExprNode parent;
     public VType vType;             // The type that this expression should ultimately evaluate to.
+    public VType elementType;       // Element type if this ExprNode vType = VType.LIST.
     public int lineNum;             // The line number in the original source code this exprssion is found on.
     public bool enclosed;           // Is this expression enclosed in '()'. Only true at root node of enclosed expression.
 
@@ -489,6 +528,7 @@ public enum EType {
     EXPRESSION,
     IDENTIFIER,
     LITERAL,
+    LIST_LITERAL,   // [0,1,2,3]
     FUNCTION,
     INDEXING,
     BINARY,
@@ -502,5 +542,6 @@ public enum VType {
     INT,
     FLOAT,
     STRING,
+    LIST,
     NONE
 }

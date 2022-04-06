@@ -163,6 +163,20 @@ public class GScriptTraverser
         // Do nothing because expression vType already set by parser.
     }
 
+    void traverseListLiteralExpr(ExprNode e) {
+        VType listType = VType.NONE;
+        foreach (ExprNode c in e.children) {
+            if (listType == VType.NONE) {
+                listType = c.vType;
+            }
+            else {
+                if (listType != c.vType) {
+                    exceptions.log($"Error (ln: {e.lineNum}): Multiple conflicting types dected in list literal: {listType.ToString()}, {c.vType.ToString()})");
+                } 
+            }
+        }
+    }
+
     void traverseBinaryExpr(ExprNode e) {
         // These binery operators always evaluate to a bool, reguardless of childrens type.
         if (e.tType == TType.OP_GREATER         ||
@@ -214,10 +228,15 @@ public class GScriptTraverser
             }
         }
         else if (e.tType == TType.OP_ASSIGNMENT) {
-            if (e.children[0].eType != EType.IDENTIFIER) {
+            if (e.children[0].eType != EType.IDENTIFIER || e.children[0].eType != EType.INDEXING) {
                 exceptions.log($"Error (ln: {e.lineNum}): Cannot assign a value to an expression of type {e.children[0].eType}");
             }
-            else if (e.children[0].vType != e.children[1].vType) {
+            if (e.children[0].eType == EType.INDEXING) {
+                if (e.children[0].elementType != e.children[1].vType) {
+                    exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].elementType} and {e.children[1].vType}.");
+                }
+            }
+            if (e.children[0].vType != e.children[1].vType) {
                 exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
             }
         }
@@ -259,6 +278,14 @@ public class GScriptTraverser
 
     void traverseIndexingExpr(ExprNode e) {
         //TODO
+        // Special Case needed for 'flib' to check types? 
+        //      Should flib be it's own expression type???
+        if (e.children[0].vType != VType.LIST) {
+            exceptions.log($"Error (ln: {e.lineNum}): {e.children[0].value} is not a list but is used in an indexing expression.");
+        }
+        if (e.children[1].vType != VType.INT) {
+            exceptions.log($"Error (ln: {e.lineNum}): List index must be an int value.");
+        }
     }
 }
 
@@ -438,6 +465,7 @@ public class Scope {
 public class ScopeVar {
     public string name;
     public VType type;
+    public VType elementType;   // Used for Lists.
 
     public ScopeVar(string _name, VType _type) {
         name = _name;
