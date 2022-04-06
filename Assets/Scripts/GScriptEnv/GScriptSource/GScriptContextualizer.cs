@@ -43,22 +43,23 @@ public class GScriptContextualizer
 
     public ScopeVar[] getContextualizedFlags() {
         List<ScopeVar> vars = new List<ScopeVar>();
-        foreach (KeyValuePair<string, SOFlag> f in SODB.LIB_FLAG) {
-            switch (f.dataType) {
+        foreach (KeyValuePair<string, SOFlag> f in SODB.LIB_FLAG.lib) {
+            switch (f.Value.dataType) {
                 case FlagDataType.INT:
-                    vars.Add(new ScopeVar(f.Key, f.Val.iVal));
+                    vars.Add(new ScopeVar(f.Key, VType.INT));
                     break;
                 case FlagDataType.STRING:
-                    vars.Add(new ScopeVar(f.Key, f.Val.sVal));
+                    vars.Add(new ScopeVar(f.Key, VType.STRING));
                     break;
                 case FlagDataType.BOOL:
-                    vars.Add(new ScopeVar(f.Key, f.Val.bVal));
+                    vars.Add(new ScopeVar(f.Key, VType.BOOL));
                     break;
                 case FlagDataType.FLOAT:
-                    vars.Add(new ScopeVar(f.Key, f.Val.fVal));
+                    vars.Add(new ScopeVar(f.Key, VType.FLOAT));
                     break;
             }
         }
+        return vars.ToArray();
     }
 
     // Try to translate between a regualar c# type and a VType

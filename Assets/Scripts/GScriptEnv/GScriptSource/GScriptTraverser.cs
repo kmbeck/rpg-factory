@@ -369,8 +369,13 @@ public class VarContext {
         pushScope();
         GScriptContextualizer ctxr = new GScriptContextualizer();
 
-        ScopeVar[] vars = ctxr.getContextualizedScopeVars<SODB>();
-        foreach (ScopeVar v in vars) { addVar(v); }
+        // Add references to all SODB libs as globals.
+        ScopeVar[] libVars = ctxr.getContextualizedScopeVars<SODB>();
+        foreach (ScopeVar v in libVars) { addVar(v); }
+
+        // Convert all flags to globals of the appropriate type.
+        ScopeVar[] flagVars = ctxr.getContextualizedFlags();
+        foreach (ScopeVar v in flagVars) { addVar(v); }
 
         ScopeFunc[] funcs = ctxr.getContextualizedScopeFuncs<EventInterface>();
         foreach (ScopeFunc f in funcs) { addFunc(f); }
