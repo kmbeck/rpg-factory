@@ -277,9 +277,6 @@ public class GScriptTraverser
     }
 
     void traverseIndexingExpr(ExprNode e) {
-        //TODO
-        // Special Case needed for 'flib' to check types? 
-        //      Should flib be it's own expression type???
         if (e.children[0].vType != VType.LIST) {
             exceptions.log($"Error (ln: {e.lineNum}): {e.children[0].value} is not a list but is used in an indexing expression.");
         }
@@ -374,9 +371,6 @@ public class VarContext {
 
         ScopeVar[] vars = ctxr.getContextualizedScopeVars<SODB>();
         foreach (ScopeVar v in vars) { addVar(v); }
-
-        // TODO: VType needs to be changed here.
-        addVar(new ScopeVar("flib",VType.NONE));
 
         ScopeFunc[] funcs = ctxr.getContextualizedScopeFuncs<EventInterface>();
         foreach (ScopeFunc f in funcs) { addFunc(f); }

@@ -161,15 +161,7 @@ public class GScriptTranslator
     }
 
     string translateBinaryExpr(ExprNode e) {
-        // 'flib' special case.
-        if (e.children[0].eType == EType.INDEXING && 
-            e.children[0].children[0].value == "flib" &&
-            e.tType == TType.OP_ASSIGNMENT) {
-            return $"SODB.LIB_FLAG.SetFlag({e.children[0].children[1].value}, {translateExpr(e.children[1])})";
-        }
-        else {
-            return $"{translateExpr(e.children[0])} {translateTType(e.tType)} {translateExpr(e.children[1])}";
-        }
+        return $"{translateExpr(e.children[0])} {translateTType(e.tType)} {translateExpr(e.children[1])}";
     }
 
     string translateUnaryExpr(ExprNode e) {
@@ -187,28 +179,7 @@ public class GScriptTranslator
     }
 
     string translateIndexingExpr(ExprNode e) {
-        // 'flib' special case.
-        if (e.children[0].value == "flib") {
-            VType vType = VType.NONE;
-            switch (SODB.LIB_FLAG.GetFlagDataType(e.children[1].value.Replace("\"",""))) {
-                case FlagDataType.INT:
-                    vType = VType.INT;
-                    break;
-                case FlagDataType.STRING:
-                    vType = VType.STRING;
-                    break;
-                case FlagDataType.BOOL:
-                    vType = VType.BOOL;
-                    break;
-                case FlagDataType.FLOAT:
-                    vType = VType.FLOAT;
-                    break;
-            }
-            return $"SODB.LIB_FLAG.GetFlag{vType}Val({e.children[1].value})";
-        }
-        else {
-            return $"{translateExpr(e.children[0])}[{translateExpr(e.children[1])}]";
-        }
+        return $"{translateExpr(e.children[0])}[{translateExpr(e.children[1])}]";
     }
 
     // Translate the input token into a string. NOT ALL TOKENS ARE IN HERE!!!
