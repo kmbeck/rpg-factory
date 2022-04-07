@@ -30,12 +30,6 @@ public abstract class GScriptEventLibrary : MonoBehaviour
             inst = this;
         }
     }
-public static void EVENT_FLAGTEST_01() {
-EventInterface.DEBUG_PRINT(SODB.LIB_FLAG.GetFlagSTRINGVal("TestStrFlag_001"));
-SODB.LIB_FLAG.SetFlag("TestStrFlag_001", "New Value");
-EventInterface.DEBUG_PRINT(SODB.LIB_FLAG.GetFlagSTRINGVal("TestStrFlag_001"));
-}
-
 public static void EVENT_MODULUSTEST_01() {
 int a = 7 % 3;
 int b = 6 % 4;

@@ -12,6 +12,7 @@ public class GScriptCompiler
     private GScriptExceptionHandler exceptions;
 
     public GScriptCompiler() {
+    
     }
 
     // Validate the input string of code.
@@ -30,8 +31,21 @@ public class GScriptCompiler
         }
     }
 
+    public void compileCSCode() {
+        // Get function string for all events.
+        List<string> eventFuncCode = new List<string>();
+        foreach (SOEvent e in SODB.LIB_EVENT.lib.Values) {
+            eventFuncCode.Add(compileEvent(e));
+        }
+
+        GScriptEventLibGenerator evt = new GScriptEventLibGenerator();
+        GScriptFlagLibGenerator flg = new GScriptFlagLibGenerator();
+        flg.genFlagLibFile();
+        evt.genEventLibFile(eventFuncCode);
+    }
+
     // Compile a single event and return as a C# function.
-    public string compileEvent(SOEvent e) {
+    private string compileEvent(SOEvent e) {
         Debug.Log($"Compiling Event Script: {e.uniqueID}");
         exceptions = new GScriptExceptionHandler();
         List<Token> tokens = tokenize(e.script);
@@ -45,54 +59,6 @@ public class GScriptCompiler
         string bodyCode = translate(statements);
         string footerCode = "}\n\n";
         return headerCode + bodyCode + footerCode;
-    }
-
-    // Compile scripts into C# code in Unity project.
-    public void compileAllEvents() {
-        string bodyCode = "";
-        foreach(SOEvent e in SODB.LIB_EVENT.lib.Values) {
-            bodyCode += compileEvent(e);
-        }
-
-        string outputFileName = "GScriptEventLibrary.cs";
-        string fileHeaderCode = @"
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-/* * * * *
- *          --- DO NOT EDIT ---
- *  THIS CLASS CONTAINS GENERATED CODE!!!
- *          --- DO NOT EDIT ---
- * * * * */
-
-public abstract class GScriptEventLibrary : MonoBehaviour
-{
-    public static GScriptEventLibrary inst;
-
-    void Start() {
-        if (inst != null) {
-            Destroy(this);
-        }
-        else {
-            inst = this;
-        }
-    }
-
-    void Awake() {
-        if (inst != null) {
-            Destroy(this);
-        }
-        else {
-            inst = this;
-        }
-    }
-";
-        string fileFooterCode = "}";
-        string outStr = fileHeaderCode + bodyCode + fileFooterCode;
-        StreamWriter sw = new StreamWriter($"Assets/Scripts/GScriptEnv/GScriptSource/GeneratedCode/{outputFileName}");
-        sw.WriteLine(outStr);
-        sw.Close();
     }
 
     // Translate input string into a list of Tokens & return.

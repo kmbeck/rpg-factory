@@ -60,7 +60,7 @@ public class EventEditorGUI : EditorWindow
 
     public void onComipleAllClicked() {
         GScriptCompiler compiler = new GScriptCompiler();
-        compiler.compileAllEvents();
+        compiler.compileCSCode();
     }
 
     public void onLoadClicked() {

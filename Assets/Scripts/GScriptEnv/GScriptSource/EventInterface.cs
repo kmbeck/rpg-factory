@@ -39,9 +39,6 @@ public class EventInterface : MonoBehaviour
     }
 
     // Ideas...
-    public static void LOAD_SCENE(string name) {
-
-    }
 
     public static void WRITE_TO_FILE(string fp, string text) {
 
