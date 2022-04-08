@@ -30,6 +30,12 @@ public abstract class GScriptEventLibrary : MonoBehaviour
             inst = this;
         }
     }
+public static void EVENT_FLAGTEST001() {
+EventInterface.DEBUG_PRINT(GScriptFlagLibrary.inst.TestStrFlag_001);
+GScriptFlagLibrary.inst.TestStrFlag_001 = "new val";
+EventInterface.DEBUG_PRINT(GScriptFlagLibrary.inst.TestStrFlag_001);
+}
+
 public static void EVENT_MODULUSTEST_01() {
 int a = 7 % 3;
 int b = 6 % 4;

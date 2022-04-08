@@ -74,16 +74,16 @@ public abstract class GScriptFlagLibrary : MonoBehaviour
         foreach (ScopeVar v in flagVars) {
             switch(v.type) {
                 case VType.INT:
-                    retval += $"\tint {v.name};\n";
+                    retval += $"\tpublic int {v.name};\n";
                     break;
                 case VType.STRING: 
-                    retval += $"\tstring {v.name};\n";
+                    retval += $"\tpublic string {v.name};\n";
                     break;
                 case VType.FLOAT:
-                    retval += $"\tfloat {v.name};\n";
+                    retval += $"\tpublic float {v.name};\n";
                     break;
                 case VType.BOOL:
-                    retval += $"\tbool {v.name};\n";
+                    retval += $"\tpublic bool {v.name};\n";
                     break;
                 case VType.LIST:
                     break;

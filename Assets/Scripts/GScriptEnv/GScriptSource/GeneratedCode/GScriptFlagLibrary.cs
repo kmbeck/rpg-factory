@@ -12,12 +12,12 @@ using UnityEngine;
 public abstract class GScriptFlagLibrary : MonoBehaviour
 {
     public static GScriptFlagLibrary inst;
-	int TestFlag;
-	bool TestFlag_001;
-	float TestFlag_002;
-	int TestFlag_003;
-	int TestFlag_A;
-	string TestStrFlag_001;
+	public int TestFlag;
+	public bool TestFlag_001;
+	public float TestFlag_002;
+	public int TestFlag_003;
+	public int TestFlag_A;
+	public string TestStrFlag_001;
  
     void Start() {
         if (inst != null) {

@@ -144,6 +144,9 @@ public class GScriptTranslator
     }
 
     string translateIdentifierExpr(ExprNode e) {
+        if (SODB.LIB_FLAG.lib.ContainsKey(e.value)) {
+            return $"GScriptFlagLibrary.inst.{e.value}";
+        }
         return $"{e.value}";
     }
 

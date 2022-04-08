@@ -6,7 +6,8 @@ using UnityEngine;
 public class GScriptTokenizer
 {
     // Regex for finding all IDENTIFIERS.
-    Regex rxIdentifier = new Regex("[a-zA-Z_]");    //TODO: need numeral support for identifiers (0-9)!
+    Regex rxIdentifierStart = new Regex("[a-zA-Z_]");
+    Regex rxIdentifierBody = new Regex("[a-zA-Z0-9_]");
     // Regex for finding all NUMBERS (float + int).
     Regex rxNumeral = new Regex("[0-9.]");
     // Regex for finding all STRINGS.
@@ -198,11 +199,11 @@ public class GScriptTokenizer
                 tokens.Add(new Token(TType.BOOL_LITERAL,buf,new int[2] {xLoc, yLoc}));
                 buf = "";
             }
-            else if (rxIdentifier.Match(buf).Success) {                 // ALL IDENTIFIERS & KEYWORDS.
+            else if (rxIdentifierStart.Match(buf).Success) {                 // ALL IDENTIFIERS & KEYWORDS.
                 // Read up until end of current Identifier.
                 // Check to ensure we havent reached end of input.
                 while (idx + 1 < inputChars.Length &&
-                        rxIdentifier.Match(inputChars[idx + 1].ToString()).Success) {
+                        rxIdentifierBody.Match(inputChars[idx + 1].ToString()).Success) {
                     idx++;
                     xLoc++;
                     buf += inputChars[idx];
