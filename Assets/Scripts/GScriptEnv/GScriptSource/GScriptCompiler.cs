@@ -26,8 +26,6 @@ public class GScriptCompiler
         }
         else {
             Debug.Log("Script validated successfully!");
-            // TODO: translate call for debugging only!
-            string csCode = translate(statements);
         }
     }
 

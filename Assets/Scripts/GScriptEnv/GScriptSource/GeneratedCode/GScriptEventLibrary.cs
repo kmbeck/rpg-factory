@@ -9,31 +9,11 @@ using UnityEngine;
  *          --- DO NOT EDIT ---
  * * * * */
 
-public abstract class GScriptEventLibrary : MonoBehaviour
+public static class GScriptEventLibrary
 {
-    public static GScriptEventLibrary inst;
-
-    void Start() {
-        if (inst != null) {
-            Destroy(this);
-        }
-        else {
-            inst = this;
-        }
-    }
-
-    void Awake() {
-        if (inst != null) {
-            Destroy(this);
-        }
-        else {
-            inst = this;
-        }
-    }
-public static void EVENT_FLAGTEST001() {
-EventInterface.DEBUG_PRINT(GScriptFlagLibrary.inst.TestStrFlag_001);
-GScriptFlagLibrary.inst.TestStrFlag_001 = "new val";
-EventInterface.DEBUG_PRINT(GScriptFlagLibrary.inst.TestStrFlag_001);
+    public static void EVENT_FLAGTEST001() {
+GScriptFlagLibrary.TestFlag_003 = GScriptFlagLibrary.TestFlag_003 + 1;
+EventInterface.DEBUG_PRINT("After: " + (GScriptFlagLibrary.TestFlag_003).ToString());
 }
 
 public static void EVENT_MODULUSTEST_01() {
@@ -75,4 +55,6 @@ string b = "10";
 EventInterface.DEBUG_PRINT(a);
 }
 
+
 }
+

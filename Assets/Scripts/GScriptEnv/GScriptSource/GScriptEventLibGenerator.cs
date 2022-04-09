@@ -22,7 +22,7 @@ public class GScriptEventLibGenerator
         }
 
         string outputFileName = "GScriptEventLibrary.cs";
-        string fileHeaderCode = @"
+        string fileCode = @$"
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,32 +33,13 @@ using UnityEngine;
  *          --- DO NOT EDIT ---
  * * * * */
 
-public abstract class GScriptEventLibrary : MonoBehaviour
-{
-    public static GScriptEventLibrary inst;
-
-    void Start() {
-        if (inst != null) {
-            Destroy(this);
-        }
-        else {
-            inst = this;
-        }
-    }
-
-    void Awake() {
-        if (inst != null) {
-            Destroy(this);
-        }
-        else {
-            inst = this;
-        }
-    }
+public static class GScriptEventLibrary
+{{
+    {bodyCode}
+}}
 ";
-        string fileFooterCode = "}";
-        string outStr = fileHeaderCode + bodyCode + fileFooterCode;
         StreamWriter sw = new StreamWriter($"Assets/Scripts/GScriptEnv/GScriptSource/GeneratedCode/{outputFileName}");
-        sw.WriteLine(outStr);
+        sw.WriteLine(fileCode);
         sw.Close();
     }
 }

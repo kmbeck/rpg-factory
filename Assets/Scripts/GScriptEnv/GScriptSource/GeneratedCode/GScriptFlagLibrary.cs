@@ -9,44 +9,14 @@ using UnityEngine;
  *          --- DO NOT EDIT ---
  * * * * */
 
-public abstract class GScriptFlagLibrary : MonoBehaviour
+public static class GScriptFlagLibrary
 {
-    public static GScriptFlagLibrary inst;
-	public int TestFlag;
-	public bool TestFlag_001;
-	public float TestFlag_002;
-	public int TestFlag_003;
-	public int TestFlag_A;
-	public string TestStrFlag_001;
+	public static int TestFlag = 987;
+	public static bool TestFlag_001 = true;
+	public static float TestFlag_002 = 1564.486f;
+	public static int TestFlag_003 = 111111111;
+	public static int TestFlag_A = 200;
+	public static string TestStrFlag_001 = "Init Value";
  
-    void Start() {
-        if (inst != null) {
-            Destroy(this);
-        }
-        else {
-            inst = this;
-            Initialize();
-        }
-    }
-
-    void Awake() {
-        if (inst != null) {
-            Destroy(this);
-        }
-        else {
-            inst = this;
-            Initialize();
-        }
-    }
-
-    private void Initialize() {
-		TestFlag = 987;
-		TestFlag_001 = true;
-		TestFlag_002 = 1564.486f;
-		TestFlag_003 = 111111111;
-		TestFlag_A = 200;
-		TestStrFlag_001 = "Init Value";
-
-    }
 }
 
