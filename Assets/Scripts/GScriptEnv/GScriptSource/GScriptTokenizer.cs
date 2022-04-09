@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class GScriptTokenizer
 {
-    // Regex for finding all IDENTIFIERS.
-    Regex rxIdentifierStart = new Regex("[a-zA-Z_]");
-    Regex rxIdentifierBody = new Regex("[a-zA-Z0-9_]");
+    // Regex for finding all IDENTIFIERS & KEYWORDS.
+    Regex rxIdentifierStart = new Regex("[a-zA-Z_]");       // Start with letter or '_'
+    Regex rxIdentifierBody = new Regex("[a-zA-Z0-9_]");     // Body can contain numerals
     // Regex for finding all NUMBERS (float + int).
     Regex rxNumeral = new Regex("[0-9.]");
     // Regex for finding all STRINGS.
