@@ -203,7 +203,6 @@ public class GScriptASTParser {
     // Assumes idx is pointing to the first token in the expression 
     // (excluding any '[]'s or '()'s.)
     private void parseExpression() {
-        // Dont eat token on first statement...
         eatTokens();
 
         // Return if we are at the end of the token stream.
@@ -314,10 +313,36 @@ public class GScriptASTParser {
             curExpr = expr;
         }
         // All unary expressions. 
-        else if (cur.type == TType.OP_NEGATION ||
+        else if (cur.type == TType.OP_NEGATION  ||
                  cur.type == TType.OP_INVERSE) {
             ExprNode expr = new ExprNode(EType.UNARY);
             expr.tType = cur.type;
+            expr.addChild(parseAndGetExpression());
+            curExpr = expr;
+        }
+        // All type cast expressions.
+        else if (cur.type == TType.KEY_BOOL    ||
+                 cur.type == TType.KEY_INT     ||
+                 cur.type == TType.KEY_FLOAT   ||
+                 cur.type == TType.KEY_STR) {
+            ExprNode expr = new ExprNode(EType.TYPE_CAST);
+            expr.tType = cur.type;      // Necissary to set this?
+            // Set vType since we know what type this expression should evaluate to.
+            switch (cur.type) {
+                case TType.KEY_BOOL:
+                    expr.vType = VType.BOOL;
+                    break;
+                case TType.KEY_INT:
+                    expr.vType = VType.INT;
+                    break;
+                case TType.KEY_FLOAT:
+                    expr.vType = VType.FLOAT;
+                    break;
+                case TType.KEY_STR:
+                    expr.vType = VType.STRING;
+                    break;
+            }
+
             expr.addChild(parseAndGetExpression());
             curExpr = expr;
         }
@@ -533,6 +558,7 @@ public enum EType {
     INDEXING,
     BINARY,
     UNARY,
+    TYPE_CAST,
     NONE
 }
 

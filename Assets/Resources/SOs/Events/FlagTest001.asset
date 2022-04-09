@@ -16,8 +16,6 @@ MonoBehaviour:
   displayName: 
   triggerFlagUniqueID: 
   parallel: 0
-  script: 'DEBUG_PRINT(TestStrFlag_001)
+  script: 'TestFlag_003 = TestFlag_003 + 1
 
-    TestStrFlag_001 = "new val"
-
-    DEBUG_PRINT(TestStrFlag_001)'
+    DEBUG_PRINT("After: " + str(TestFlag_003))'

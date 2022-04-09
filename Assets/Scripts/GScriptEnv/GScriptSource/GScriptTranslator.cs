@@ -139,13 +139,16 @@ public class GScriptTranslator
             case EType.UNARY:
                 retval += translateUnaryExpr(e);
                 break;
+            case EType.TYPE_CAST:
+                retval += translateTypeCastExpr(e);
+                break;
         }
         return retval;
     }
 
     string translateIdentifierExpr(ExprNode e) {
         if (SODB.LIB_FLAG.lib.ContainsKey(e.value)) {
-            return $"GScriptFlagLibrary.inst.{e.value}";
+            return $"GScriptFlagLibrary.{e.value}";
         }
         return $"{e.value}";
     }
@@ -183,6 +186,17 @@ public class GScriptTranslator
 
     string translateIndexingExpr(ExprNode e) {
         return $"{translateExpr(e.children[0])}[{translateExpr(e.children[1])}]";
+    }
+
+    string translateTypeCastExpr(ExprNode e) {
+        // TODO: need a lot more cases for different type combinations...?
+        Debug.Log("Type cast type: " + e.vType.ToString());
+        if (e.vType == VType.STRING) {
+            return $"({translateExpr(e.children[0])}).ToString()";
+        }
+        else {
+            return $"({translateVType(e.vType)}){translateExpr(e.children[0])}";
+        }
     }
 
     // Translate the input token into a string. NOT ALL TOKENS ARE IN HERE!!!

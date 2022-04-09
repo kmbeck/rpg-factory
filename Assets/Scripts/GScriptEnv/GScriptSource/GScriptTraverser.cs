@@ -150,6 +150,9 @@ public class GScriptTraverser
             case EType.UNARY:
                 traverseUnaryExpr(e);
                 break;
+            case EType.TYPE_CAST:
+                traverseTypeCastExpr(e);
+                break;
         }
     }
 
@@ -282,6 +285,20 @@ public class GScriptTraverser
         }
         if (e.children[1].vType != VType.INT) {
             exceptions.log($"Error (ln: {e.lineNum}): List index must be an int value.");
+        }
+    }
+
+    void traverseTypeCastExpr(ExprNode e) {
+        // Define this elsewhere?
+        Dictionary<VType, List<VType>> castRules = new Dictionary<VType, List<VType>>() {
+            {VType.BOOL  ,  new List<VType>()   {VType.STRING}},
+            {VType.INT   ,  new List<VType>()   {VType.STRING, VType.FLOAT}},
+            {VType.FLOAT ,  new List<VType>()   {VType.STRING, VType.INT}},
+            {VType.STRING,  new List<VType>()   {VType.INT, VType.FLOAT, VType.BOOL}}
+        };
+
+        if (!castRules[e.vType].Contains(e.children[0].vType)) {
+            exceptions.log($"Error (ln: {e.lineNum}): cannot cast type {e.children[0].vType} to {e.vType}");
         }
     }
 }
