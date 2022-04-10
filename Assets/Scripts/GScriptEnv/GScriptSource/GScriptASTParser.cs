@@ -289,6 +289,7 @@ public class GScriptASTParser {
             if (curExpr != null) {
                 // If curExpr is binary expr, add it based on operator precedence.
                 if (curExpr.eType == EType.BINARY) {
+                    //Debug.Log(curExpr.tType + ", " + expr.tType);
                     if ((int)curExpr.tType <= (int)expr.tType) {
                         expr.addChild(curExpr);
                         parseExpression();
@@ -342,8 +343,14 @@ public class GScriptASTParser {
                     expr.vType = VType.STRING;
                     break;
             }
-
-            expr.addChild(parseAndGetExpression());
+            eatTokens();    // Eat up to opening '('
+            context.pdepth++;
+            while(next.type != TType.R_PAREN) {
+                parseExpression();
+            }
+            expr.addChild(curExpr);
+            eatTokens();    // Eat up closing ')'
+            context.pdepth--;
             curExpr = expr;
         }
         // '(' and ')' encountered (other than a function call expression).
