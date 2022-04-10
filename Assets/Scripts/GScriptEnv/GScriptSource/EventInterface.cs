@@ -38,6 +38,12 @@ public class EventInterface : MonoBehaviour
         Debug.Log(message);
     }
 
+    public static void EXEC_EVENT(string uniqueID) {
+        string methodName = "EVENT_" + uniqueID.ToUpper();
+        var m = typeof(GScriptEventLibrary).GetMethod(methodName);
+        m.Invoke(null, null);
+    }
+
     // Ideas...
 
     public static void WRITE_TO_FILE(string fp, string text) {
