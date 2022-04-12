@@ -11,7 +11,11 @@ using UnityEngine;
 
 public static class GScriptEventLibrary
 {
-    public static void EVENT_FLAGTEST001() {
+    public static void EVENT_EXECEVENTTEST001() {
+EventInterface.EXEC_EVENT("ListTest001");
+}
+
+public static void EVENT_FLAGTEST001() {
 GScriptFlagLibrary.TestFlag_003 = GScriptFlagLibrary.TestFlag_003 + 1;
 EventInterface.DEBUG_PRINT("After: " + (GScriptFlagLibrary.TestFlag_003).ToString());
 EventInterface.DEBUG_PRINT("After: " + (GScriptFlagLibrary.TestFlag_003).ToString());
