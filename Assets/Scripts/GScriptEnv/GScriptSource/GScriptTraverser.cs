@@ -147,6 +147,9 @@ public class GScriptTraverser
             case EType.LITERAL:
                 traverseLiteralExpr(e);
                 break;
+            case EType.LIST_LITERAL:
+                traverseLiteralExpr(e);
+                break;
             case EType.UNARY:
                 traverseUnaryExpr(e);
                 break;
@@ -241,6 +244,11 @@ public class GScriptTraverser
             }
             if (e.children[0].vType != e.children[1].vType) {
                 exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+            }
+            if (e.children[0].vType == VType.LIST) {
+                if (e.children[0].elementType != e.children[1].elementType) {
+                    exceptions.log($"Error (ln: {e.lineNum}): Operand Lists contain different types {e.children[0].elementType} and {e.children[1].elementType}");
+                }
             }
         }
     }

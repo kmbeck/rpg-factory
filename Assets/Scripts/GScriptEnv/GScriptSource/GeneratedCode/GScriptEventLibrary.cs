@@ -14,6 +14,13 @@ public static class GScriptEventLibrary
     public static void EVENT_FLAGTEST001() {
 GScriptFlagLibrary.TestFlag_003 = GScriptFlagLibrary.TestFlag_003 + 1;
 EventInterface.DEBUG_PRINT("After: " + (GScriptFlagLibrary.TestFlag_003).ToString());
+EventInterface.DEBUG_PRINT("After: " + (GScriptFlagLibrary.TestFlag_003).ToString());
+}
+
+public static void EVENT_LISTTEST001() {
+List<string> words = new List<string>() {"this" , "is" , "a" , "test" , "!"};
+List<int> nums = new List<int>() {5 , 10 , 15 , 20 , 25 , 30};
+EventInterface.DEBUG_PRINT((nums[3] * 50).ToString());
 }
 
 public static void EVENT_MODULUSTEST_01() {

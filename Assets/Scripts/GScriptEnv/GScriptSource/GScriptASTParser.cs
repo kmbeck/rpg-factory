@@ -160,6 +160,7 @@ public class GScriptASTParser {
             Statement s = new Statement(SType.VAR_DEF);
             s.varDefVType = VType.LIST;
             eatTokens(2);   // Eat next keyword and opening '<'
+            Debug.Log("Next TT: " + next.type + ", " + next.value);
             switch (next.type) {
                 case TType.KEY_BOOL:
                     s.listElementVType = VType.BOOL;
@@ -174,9 +175,12 @@ public class GScriptASTParser {
                     s.listElementVType = VType.STRING;
                     break;
             }
-            eatTokens(2);   // Eat next keyword and closing '>'
+            eatTokens(2);   // Eat next keyword and cl
+            Debug.Log("Next TT: " + next.type + ", " + next.value);
             s.expr = parseAndGetExpression();
+            s.expr.children[1].elementType = s.listElementVType;
             eatEOS();
+            return s;
         }
         else {
             Statement s = new Statement(SType.EXPR);
@@ -368,15 +372,22 @@ public class GScriptASTParser {
             context.pdepth--;
             return;
         }
-        // '[' and ']' encountered (other than an indexing expression).
+        // All list literal expressions. ('[' and ']' encountered outside of indexing expr.)
         else if (cur.type == TType.L_BRACKET) {
-            // do stuff
+            ExprNode expr = new ExprNode(EType.LIST_LITERAL);
+            expr.vType = VType.LIST;
+            expr.tType = cur.type;
+            eatTokens();    // Eat opening '['.
+            curExpr = null; // Need to reset curExpr here in case of list defs??????
             context.bdepth++;
             while (cur.type != TType.R_BRACKET) {
                 parseExpression();
             }
-            curExpr.enclosed = true;    // should enclosed only be used for parens?
+            Debug.Log("Adding expr of type: " + curExpr.eType + " to list literal.");
+            expr.addChild(curExpr);
+            expr.enclosed = true;
             context.bdepth--;
+            curExpr = expr;
             return;
         }
         else if (cur.type == TType.R_BRACKET) {

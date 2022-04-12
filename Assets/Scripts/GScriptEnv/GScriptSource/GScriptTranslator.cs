@@ -94,13 +94,9 @@ public class GScriptTranslator
         retval += translateVType(s.varDefVType);
         if (s.varDefVType == VType.LIST) {
             retval += $"<{translateVType(s.listElementVType)}>";
-            retval += $" new List<{translateVType(s.listElementVType)}>()";
-            // TODO: initialize list with a new value???
         }
-        else {
-            retval += " ";
-            retval += translateExpr(s.expr) + ";\n";
-        }
+        retval += " ";
+        retval += translateExpr(s.expr) + ";\n"; 
         return retval;
     }
 
@@ -126,6 +122,10 @@ public class GScriptTranslator
                 break;
             case EType.LITERAL:
                 retval += translateLiteralExpr(e);
+                break;
+            case EType.LIST_LITERAL:
+                // TODO: translating list literals. Special case for translating list definitions (list<x> a = [])???
+                retval += translateListLiteralExpr(e);
                 break;
             case EType.FUNCTION:
                 retval += translateFunctionCallExpr(e);
@@ -163,7 +163,9 @@ public class GScriptTranslator
     }
 
     string translateListLiteralExpr(ExprNode e) {
-        return "";
+        string vals = "";
+        vals += translateExpr(e.children[0]);
+        return $"new List<{translateVType(e.elementType)}>() {{{vals}}}";
     }
 
     string translateBinaryExpr(ExprNode e) {
@@ -190,7 +192,7 @@ public class GScriptTranslator
 
     string translateTypeCastExpr(ExprNode e) {
         // TODO: need a lot more cases for different type combinations...?
-        Debug.Log("Type cast type: " + e.vType.ToString());
+        //Debug.Log("Type cast type: " + e.vType.ToString());
         if (e.vType == VType.STRING) {
             return $"({translateExpr(e.children[0])}).ToString()";
         }
@@ -234,6 +236,8 @@ public class GScriptTranslator
                 return "||";
             case TType.OP_ASSIGNMENT:
                 return "=";
+            case TType.OP_COMMA:
+                return ",";
         }
         //TODO: Error here?
         return "";
@@ -253,6 +257,8 @@ public class GScriptTranslator
                 return "string";
             case VType.LIST:
                 return "List";
+            case VType.NONE:
+                return "NONE???";
         }
         //TODO: Error here?
         return "";

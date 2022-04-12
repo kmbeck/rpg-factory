@@ -44,7 +44,7 @@ public class GScriptTokenizer
     const string OP_NOTEQUALS = "!=";
     const string OP_GREATER = ">";
     const string OP_GREATEROREQUAL = ">=";
-    const string OP_LESS = ">";
+    const string OP_LESS = "<";
     const string OP_LESSOREQUAL = "<=";
     const string OP_AND = "&&";
     const string OP_OR = "||";
