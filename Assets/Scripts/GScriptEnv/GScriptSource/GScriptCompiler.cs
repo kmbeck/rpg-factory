@@ -21,7 +21,7 @@ public class GScriptCompiler
         List<Token> tokens = tokenize(program);
         List<Statement> statements = parse(tokens.ToArray());
         traverse(statements);
-        if (!exceptions.empty()) {
+        if (!exceptions.isEmpty()) {
             exceptions.printAllExceptions();
         }
         else {
@@ -49,7 +49,7 @@ public class GScriptCompiler
         List<Token> tokens = tokenize(e.script);
         List<Statement> statements = parse(tokens.ToArray());
         traverse(statements);
-        if (!exceptions.empty()) {
+        if (!exceptions.isEmpty()) {
             exceptions.printAllExceptions();
             return "";
         }

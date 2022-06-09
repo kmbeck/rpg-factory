@@ -16,4 +16,4 @@ MonoBehaviour:
   displayName: 
   triggerFlagUniqueID: 
   parallel: 0
-  script: DEBUG_PRINT("Aaskdljfas;kf")
+  script: DEBUG_PRINT("Aaskdljfas;kf)aaaa

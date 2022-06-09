@@ -81,6 +81,7 @@ public class SODB : MonoBehaviour
     public static void InitLibs() {
         LoadObjDataJSON();
 
+        //TODO: Dynamically load differet lib types somehow?
         // * * * * * Item Container * * * * *
         LIB_ITEM_CONTAINER = new SOLib<SOItem>();
         LIB_ITEM_CONTAINER.LoadLib(objMetadata["ItemContainer"]["default_so_dir"].ToString());

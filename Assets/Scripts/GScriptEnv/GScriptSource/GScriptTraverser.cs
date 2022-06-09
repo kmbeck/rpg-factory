@@ -14,7 +14,6 @@ public class GScriptTraverser
     // Traverse over our parsed Statements and ensure that there are no grammar
     // or scope errors in the program.
     public void traverse(List<Statement> statements) {
-        List<string> errors = new List<string>();
         Scope scope = new Scope();
         context = new VarContext();
         exceptions = new GScriptExceptionHandler();

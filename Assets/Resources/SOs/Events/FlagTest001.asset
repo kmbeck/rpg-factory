@@ -18,7 +18,4 @@ MonoBehaviour:
   parallel: 0
   script: 'TestFlag_003 = TestFlag_003 + 1
 
-    DEBUG_PRINT("After: " + str(TestFlag_003))
-
-    DEBUG_PRINT("After:
-    " + str(TestFlag_003))'
+    DEBUG_PRINT("After: " + str(TestFlag_003))'

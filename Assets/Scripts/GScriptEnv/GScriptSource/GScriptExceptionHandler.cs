@@ -11,25 +11,32 @@ using UnityEngine;
 
 public class GScriptExceptionHandler
 {
-    public List<GScriptException> exceptions;
+    public static List<GScriptException> exceptions;
 
     public GScriptExceptionHandler() {
-        exceptions = new List<GScriptException>();
+        if (exceptions == null) {
+            exceptions = new List<GScriptException>();
+        }
     }
 
     public void log(string message) {
         exceptions.Add(new GScriptException(message));
     }
 
-    public bool empty() {
+    public bool isEmpty() {
         return exceptions.Count == 0 ? true : false;
     }
 
-    // Print all exceptions to Debug.LogError()
+    public void flush() {
+        exceptions.Clear();
+    }
+
+    // Print all exceptions to Debug.LogError(). Flushes exception list when done.
     public void printAllExceptions() {
         foreach (GScriptException e in exceptions) {
             Debug.LogError(e.message);
         }
+        flush();
     }
 }
 
