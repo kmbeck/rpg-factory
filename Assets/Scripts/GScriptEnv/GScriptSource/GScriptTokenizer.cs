@@ -51,8 +51,8 @@ public class GScriptTokenizer
     const string OP_COMMA = ",";
     const string OP_NEGATION = "!";
     const string OP_INVERSE = "-";
+    const string OP_ACCESSOR = ".";
     const string EOF = "EOF";
-    //TODO: "." access operator for referencing members!
 
     public GScriptTokenizer() {
         
@@ -85,6 +85,9 @@ public class GScriptTokenizer
             else if (buf == R_PAREN) {                                  // )
                 tokens.Add(new Token(TType.R_PAREN,buf,new int[2] {xLoc, yLoc}));
                 buf = "";
+            }
+            else if (buf == OP_ACCESSOR) {                              // .
+                tokens.Add(new Token(TType.OP_ACCESSOR,buf,new int[2] {xLoc, yLoc}));
             }
             else if (buf == OP_ASSIGNMENT) {                            // = & ==
                 if (inputChars[idx + 1] == '=') {                       
@@ -315,6 +318,7 @@ public enum TType {
     R_PAREN,
     L_BRACKET,
     R_BRACKET,
+    OP_ACCESSOR,
     OP_NEGATION,
     OP_INVERSE,
     OP_MULTIPLICATION,
