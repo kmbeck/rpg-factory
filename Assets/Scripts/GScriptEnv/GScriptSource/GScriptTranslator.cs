@@ -183,8 +183,39 @@ public class GScriptTranslator
         for (int i = 1; i < e.children.Count; i++) {
             paramStr += translateExpr(e.children[i]) + ",";
         }
-        paramStr = paramStr.Remove(paramStr.Length - 1, 1);
-        return $"EventInterface.{translateExpr(e.children[0])}({paramStr})";
+        if (paramStr.Length > 0) { 
+            paramStr = paramStr.Remove(paramStr.Length - 1, 1); 
+        }
+
+        // Check to see if we are translating a native list function. Otherwise assume we are dealing with
+        // an EventInterface function.
+        string funcName = "";
+        if (e.parent != null && (e.parent.eType == EType.BINARY && e.parent.tType == TType.OP_ACCESSOR)) {
+            funcName =  translateNativeListFunctionCallExpr(e.children[0]);
+        }
+        else {
+            funcName = $"EventInterface.{translateExpr(e.children[0])}";
+        }
+
+        return $"{funcName}({paramStr})";
+    }
+
+    // This function handles a special case for translating basic list functions.
+    // list.add(), list.remove(), etc. into valid C# versions.
+    string translateNativeListFunctionCallExpr(ExprNode e) {
+        string funcName = "";
+        switch (e.value) {
+            case "add":
+                funcName = "Add";
+                break;
+            case "remove":
+                funcName = "Remove";
+                break;
+            case "clear":
+                funcName = "Clear";
+                break;
+        }
+        return funcName;
     }
 
     string translateIndexingExpr(ExprNode e) {

@@ -194,7 +194,19 @@ public class GScriptTraverser
             e.vType = VType.BOOL;
         }
 
+        // Check value types of left and right hand operators of our binary expression.
+        EType lHandEType = e.children[0].eType;
+        if (lHandEType == EType.LIST) {
+            lHandEtype = e.children[0].elementType;
+        }
+        EType rHandEType = e.children[1].eType;
+        if (rHandEType == EType.LIST) {
+            rHandEType = e.children[1].elementType;
+        }
+
         // Different cases for different binary ops?
+        // TODO: should type rules for expressions be defined somewhere else?
+        //      it would probably save a lot of checks at this stage of compilation...
         if (e.tType == TType.OP_ADDITION) {
             if (e.children[0].vType != VType.INT   && 
                 e.children[0].vType != VType.FLOAT &&
@@ -212,7 +224,8 @@ public class GScriptTraverser
                  e.tType == TType.OP_GREATEROREQUAL ||
                  e.tType == TType.OP_LESS           ||
                  e.tType == TType.OP_LESSOREQUAL) {
-            if (e.children[0].vType != VType.INT && e.children[0].vType != VType.FLOAT) {
+            if ((e.children[0].vType != VType.INT || e.children[0].elementType != VType.INT) && 
+                (e.children[0].vType != VType.FLOAT || e.children[0].elementType != VType.FLOAT)) {
                 exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
             }
             if (e.children[0].vType != e.children[1].vType) {

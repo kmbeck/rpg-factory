@@ -288,7 +288,8 @@ public class GScriptASTParser {
                  cur.type == TType.OP_LESSOREQUAL    ||
                  cur.type == TType.OP_AND            ||
                  cur.type == TType.OP_OR             || 
-                 cur.type == TType.OP_COMMA) { 
+                 cur.type == TType.OP_COMMA          ||
+                 cur.type == TType.OP_ACCESSOR) { 
             ExprNode expr = new ExprNode(EType.BINARY);
             expr.tType = cur.type;
             if (curExpr != null) {
@@ -439,7 +440,7 @@ public class GScriptASTParser {
             }
         }
         if (tcount > context.tdepth) {
-            exceptions.log($"Error (ln: {cur.xLoc}): too many indents for current context.");
+            exceptions.log($"Error (ln: {cur.location[1]}): too many indents for current context.");
         }
         else {
             context.tdepth = tcount;

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 915b68dcd035eebb69036b69950b7a85, type: 3}
+  m_Name: ListTest002
+  m_EditorClassIdentifier: 
+  uniqueID: ListTest002
+  displayName: 
+  triggerFlagUniqueID: 
+  parallel: 0
+  script: 'list<str> words = ["hello","this","is","a","test","!"]
+
+    list<int>
+    nums = [0,5,10,15,20,25,30]
+
+    DEBUG_PRINT(str(nums[3] * 50))
+
+
+    nums.add(55)
+
+    DEBUG_PRINT(str(nums[6]))'
