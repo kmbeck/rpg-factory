@@ -16,6 +16,7 @@ public class GScriptASTParser {
     private Token next;     // The token after cur.
     private List<Statement> program;
     private ExprNode curExpr;   // The last expression returned by parseExpr().
+    private GScriptExceptionHandler exceptions; // Exception handler for the parser.
 
     public GScriptASTParser() {
 
@@ -268,7 +269,10 @@ public class GScriptASTParser {
                 case TType.FLOAT_LITERAL:
                     expr.vType = VType.FLOAT;
                     break;
-                //TODO: fall-through case if value is JACKED??
+                default:
+                    expr.vType = VType.NONE;
+                    exceptions.log($"Error (ln: {expr.lineNum}): could not determine type for literal: {expr.value}");
+                    break;
             }
             curExpr = expr;
         }
@@ -383,7 +387,6 @@ public class GScriptASTParser {
             while (cur.type != TType.R_BRACKET) {
                 parseExpression();
             }
-            Debug.Log("Adding expr of type: " + curExpr.eType + " to list literal.");
             expr.addChild(curExpr);
             expr.enclosed = true;
             context.bdepth--;
@@ -439,7 +442,7 @@ public class GScriptASTParser {
             }
         }
         if (tcount > context.tdepth) {
-            // TODO: Throw error: too many tabs!
+            exceptions.log($"Error (ln: {cur.xLoc}): too many indents for current context.");
         }
         else {
             context.tdepth = tcount;

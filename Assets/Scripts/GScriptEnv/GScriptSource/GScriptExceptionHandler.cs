@@ -14,6 +14,7 @@ public class GScriptExceptionHandler
     public static List<GScriptException> exceptions;
 
     public GScriptExceptionHandler() {
+        // Only initialize exceptions if it has not been initialized yet.
         if (exceptions == null) {
             exceptions = new List<GScriptException>();
         }
