@@ -146,9 +146,6 @@ public class GScriptASTParser {
                     break;
                 default:
                     s.varDefVType = VType.NONE;
-                    // TODO: ERROR: Invalid keyword in VAR_DEF statement.
-                    // Should we wait to throw this error until the
-                    // traverse?
                     break;
             }
             eatTokens();

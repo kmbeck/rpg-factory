@@ -7,8 +7,7 @@ using UnityEngine;
  * These are functions that are visible globally within the g-script engine.
  * Add functions to this file as needed...
  *
- * TODO: classes should be able to inherit from this class to add their functions
- * to the list of available functions in GScript.
+ * TODO: better way to register functions with EventInterface...
  * * * * */
 public class EventInterface : MonoBehaviour
 {

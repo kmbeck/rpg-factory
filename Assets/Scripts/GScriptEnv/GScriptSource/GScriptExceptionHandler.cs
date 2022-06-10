@@ -5,8 +5,6 @@ using UnityEngine;
 /* * * * *
  * An interface for queueing Exceptions while traversing a GScript program.
  * Allows exceptions to be registered and printed in a simple & uniform way.
- * TODO: better way to print multiple similar error messages? Log an error enum
- *      type and each error type has it's own message?
  * * * * */
 
 public class GScriptExceptionHandler

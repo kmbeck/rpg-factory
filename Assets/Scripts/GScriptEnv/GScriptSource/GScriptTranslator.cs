@@ -124,10 +124,11 @@ public class GScriptTranslator
                 retval += translateLiteralExpr(e);
                 break;
             case EType.LIST_LITERAL:
-                // TODO: translating list literals. Special case for translating list definitions (list<x> a = [])???
                 retval += translateListLiteralExpr(e);
                 break;
             case EType.FUNCTION:
+                // TODO: If function call is not preceeded by an accessor operator, assume it is a EventInterface call
+                //      otherwise, it is a function call on a list (probably???)
                 retval += translateFunctionCallExpr(e);
                 break;
             case EType.INDEXING:
