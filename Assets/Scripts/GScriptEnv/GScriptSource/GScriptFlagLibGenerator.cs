@@ -15,7 +15,7 @@ public class GScriptFlagLibGenerator
 
     }
 
-    // Generate GScriptFlagLibrar.cs file.
+    // Generate GScriptFlagLibrary.cs file.
     public void genFlagLibFile() {
         string defCode = genFlagDefCode();
         string outputFileName = "GScriptFlagLibrary.cs";

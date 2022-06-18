@@ -21,4 +21,14 @@ MonoBehaviour:
     list<int>
     nums = [0,5,10,15,20,25,30]
 
-    DEBUG_PRINT(str(nums[3] * 50))'
+    nums.add(5000)
+
+    words.add("added")
+
+    DEBUG_PRINT(words[6])
+
+    DEBUG_PRINT(str(nums[3]
+    * 50))
+
+
+    DEBUG_PRINT(str(1 + 2 + 3 + 4 + 5))'

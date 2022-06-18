@@ -158,7 +158,6 @@ public class GScriptASTParser {
             Statement s = new Statement(SType.VAR_DEF);
             s.varDefVType = VType.LIST;
             eatTokens(2);   // Eat next keyword and opening '<'
-            Debug.Log("Next TT: " + next.type + ", " + next.value);
             switch (next.type) {
                 case TType.KEY_BOOL:
                     s.listElementVType = VType.BOOL;
@@ -173,10 +172,11 @@ public class GScriptASTParser {
                     s.listElementVType = VType.STRING;
                     break;
             }
-            eatTokens(2);   // Eat next keyword and cl
-            Debug.Log("Next TT: " + next.type + ", " + next.value);
+            eatTokens(2);   // Eat next keyword and closing '>'
             s.expr = parseAndGetExpression();
-            s.expr.children[1].elementType = s.listElementVType;
+            s.expr.children[0].elementType = s.listElementVType;
+            // Debug.Log($"Expr = {s.expr.children[0].eType.ToString()}");
+            // Debug.Log($"New List Type: {s.expr.children[0].elementType}");
             eatEOS();
             return s;
         }
@@ -295,7 +295,6 @@ public class GScriptASTParser {
             if (curExpr != null) {
                 // If curExpr is binary expr, add it based on operator precedence.
                 if (curExpr.eType == EType.BINARY) {
-                    //Debug.Log(curExpr.tType + ", " + expr.tType);
                     if ((int)curExpr.tType <= (int)expr.tType) {
                         expr.addChild(curExpr);
                         parseExpression();
@@ -379,7 +378,6 @@ public class GScriptASTParser {
             ExprNode expr = new ExprNode(EType.LIST_LITERAL);
             expr.vType = VType.LIST;
             expr.tType = cur.type;
-            eatTokens();    // Eat opening '['.
             curExpr = null; // Need to reset curExpr here in case of list defs??????
             context.bdepth++;
             while (cur.type != TType.R_BRACKET) {
@@ -476,7 +474,7 @@ public class LexContext {
     
     // Are we currently inside of any [] or ()?
     public bool enclosed() {
-        if (bdepth > 0 || bdepth > 0) {
+        if (bdepth > 0 || pdepth > 0) {
             return true;
         }
         return false;
@@ -534,6 +532,7 @@ public class ExprNode {
         eType = exprType;
         tType = TType.NONE;
         vType = VType.NONE;
+        elementType = VType.NONE;
         children = new List<ExprNode>();
         parent = null;
         enclosed = false;

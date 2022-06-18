@@ -93,7 +93,7 @@ public class GScriptTranslator
         string retval = "";
         retval += translateVType(s.varDefVType);
         if (s.varDefVType == VType.LIST) {
-            retval += $"<{translateVType(s.listElementVType)}>";
+            retval += $"<{translateVType(s.expr.children[0].elementType)}>";
         }
         retval += " ";
         retval += translateExpr(s.expr) + ";\n"; 
@@ -166,11 +166,11 @@ public class GScriptTranslator
     string translateListLiteralExpr(ExprNode e) {
         string vals = "";
         vals += translateExpr(e.children[0]);
-        return $"new List<{translateVType(e.elementType)}>() {{{vals}}}";
+        return $"new List<{translateVType(e.children[0].vType)}>() {{{vals}}}";
     }
 
     string translateBinaryExpr(ExprNode e) {
-        return $"{translateExpr(e.children[0])} {translateTType(e.tType)} {translateExpr(e.children[1])}";
+        return $"{translateExpr(e.children[0])}{translateTType(e.tType)}{translateExpr(e.children[1])}";
     }
 
     string translateUnaryExpr(ExprNode e) {
@@ -190,13 +190,12 @@ public class GScriptTranslator
         // Check to see if we are translating a native list function. Otherwise assume we are dealing with
         // an EventInterface function.
         string funcName = "";
-        if (e.parent != null && (e.parent.eType == EType.BINARY && e.parent.tType == TType.OP_ACCESSOR)) {
-            funcName =  translateNativeListFunctionCallExpr(e.children[0]);
+        if (e.parent != null && e.parent.tType == TType.OP_ACCESSOR) {
+            funcName = translateNativeListFunctionCallExpr(e.children[0]);
         }
         else {
             funcName = $"EventInterface.{translateExpr(e.children[0])}";
         }
-
         return $"{funcName}({paramStr})";
     }
 
@@ -204,14 +203,15 @@ public class GScriptTranslator
     // list.add(), list.remove(), etc. into valid C# versions.
     string translateNativeListFunctionCallExpr(ExprNode e) {
         string funcName = "";
+        // TODO: should '.' be a part of the function name expr value?
         switch (e.value) {
-            case "add":
+            case ".add":
                 funcName = "Add";
                 break;
-            case "remove":
-                funcName = "Remove";
+            case ".remove":
+                funcName = "RemoveAt";
                 break;
-            case "clear":
+            case ".clear":
                 funcName = "Clear";
                 break;
         }
@@ -270,6 +270,8 @@ public class GScriptTranslator
                 return "=";
             case TType.OP_COMMA:
                 return ",";
+            case TType.OP_ACCESSOR:
+                return ".";
         }
         //TODO: Error here?
         return "";

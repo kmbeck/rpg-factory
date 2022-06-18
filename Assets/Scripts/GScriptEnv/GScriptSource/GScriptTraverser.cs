@@ -7,6 +7,29 @@ public class GScriptTraverser
     private VarContext context;
     private GScriptExceptionHandler exceptions;
 
+    // Defines what types are allowed to be used in different binary expressions.
+    private static Dictionary<TType, List<VType>> binaryExprGrammarRules = new Dictionary<TType, List<VType>>() {
+        {TType.OP_ASSIGNMENT    ,   new List<VType> {VType.BOOL, VType.FLOAT, VType.INT, VType.STRING}},
+        {TType.OP_COMMA         ,   new List<VType> {VType.BOOL, VType.FLOAT, VType.INT, VType.STRING}},
+        {TType.OP_ADDITION      ,   new List<VType> {VType.FLOAT, VType.INT, VType.STRING}},
+        {TType.OP_SUBTRACTION   ,   new List<VType> {VType.FLOAT, VType.INT}},
+        {TType.OP_MULTIPLICATION,   new List<VType> {VType.FLOAT, VType.INT}},
+        {TType.OP_DIVISION      ,   new List<VType> {VType.FLOAT, VType.INT}},
+        {TType.OP_MODULUS       ,   new List<VType> {VType.FLOAT, VType.INT}},
+        {TType.OP_EQUALITY      ,   new List<VType> {VType.BOOL, VType.FLOAT, VType.INT, VType.STRING}},
+        {TType.OP_NOTEQUALS     ,   new List<VType> {VType.BOOL, VType.FLOAT, VType.INT, VType.STRING}},
+        //{TType.OP_GREATER       ,   new List<VType> {VType.FLOAT, VType.INT}},
+        {TType.OP_LESS          ,   new List<VType> {VType.FLOAT, VType.INT}},
+        {TType.OP_LESSOREQUAL   ,   new List<VType> {VType.FLOAT, VType.INT}},
+        {TType.OP_GREATER       ,   new List<VType> {VType.FLOAT, VType.INT}},
+        {TType.OP_GREATEROREQUAL,   new List<VType> {VType.FLOAT, VType.INT}},
+        {TType.OP_AND           ,   new List<VType> {VType.BOOL}},
+        {TType.OP_OR            ,   new List<VType> {VType.BOOL}}
+    };
+
+    // Defines what types are allowed to be used in different unary expressions.
+    private static Dictionary<TType, List<VType>> uniaryExprGrammarRules = new Dictionary<TType, List<VType>>() {};
+
     public GScriptTraverser() {
 
     }
@@ -95,7 +118,8 @@ public class GScriptTraverser
         }
         else {
             // Add new var to context.
-            context.addVar(s.expr.children[0].value, s.varDefVType);
+            VType newVarElementType = VType.NONE;
+            context.addVar(s.expr.children[0].value, s.varDefVType, s.listElementVType);
         }
     }
 
@@ -183,7 +207,7 @@ public class GScriptTraverser
     }
 
     void traverseBinaryExpr(ExprNode e) {
-        // These binery operators always evaluate to a bool, reguardless of childrens type.
+        // These binary operators always evaluate to a bool, reguardless of childrens type.
         if (e.tType == TType.OP_GREATER         ||
             e.tType == TType.OP_GREATEROREQUAL  ||
             e.tType == TType.OP_LESS            ||
@@ -195,73 +219,30 @@ public class GScriptTraverser
         }
 
         // Check value types of left and right hand operators of our binary expression.
-        EType lHandEType = e.children[0].eType;
-        if (lHandEType == EType.LIST) {
-            lHandEtype = e.children[0].elementType;
+        // TODO: OK to only read for vars here or are there other cases where a list literal could be used?
+        VType lHandVType = e.children[0].vType;
+        if (lHandVType == VType.LIST) {
+            if (e.children[0].eType == EType.INDEXING) {}
+            lHandVType = context.getVar(e.children[0].value).elementType;
         }
-        EType rHandEType = e.children[1].eType;
-        if (rHandEType == EType.LIST) {
-            rHandEType = e.children[1].elementType;
+        VType rHandVType = e.children[1].vType;
+        if (rHandVType == VType.LIST) {
+            rHandVType = context.getVar(e.children[0].value).elementType;
         }
 
-        // Different cases for different binary ops?
-        // TODO: should type rules for expressions be defined somewhere else?
-        //      it would probably save a lot of checks at this stage of compilation...
-        if (e.tType == TType.OP_ADDITION) {
-            if (e.children[0].vType != VType.INT   && 
-                e.children[0].vType != VType.FLOAT &&
-                e.children[0].vType != VType.STRING) {
-                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
+        // TODO: Need any other checks for equality operator???
+        if (e.tType != TType.OP_EQUALITY) {
+        // TODO: Fix this hacky code and actually check accessor children...?
+            if (e.tType == TType.OP_ACCESSOR) { return; }
+            if (!binaryExprGrammarRules[e.tType].Contains(lHandVType)) {
+                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for left-hand operator {e.tType}, {lHandVType}.");
             }
-            if (e.children[0].vType != e.children[1].vType) {
-                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
+            if (!binaryExprGrammarRules[e.tType].Contains(rHandVType)) {
+                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for right-hand operator {e.tType}, {rHandVType}.");
             }
         }
-        else if (e.tType == TType.OP_SUBTRACTION    ||
-                 e.tType == TType.OP_MULTIPLICATION ||
-                 e.tType == TType.OP_DIVISION       ||
-                 e.tType == TType.OP_GREATER        ||
-                 e.tType == TType.OP_GREATEROREQUAL ||
-                 e.tType == TType.OP_LESS           ||
-                 e.tType == TType.OP_LESSOREQUAL) {
-            if ((e.children[0].vType != VType.INT || e.children[0].elementType != VType.INT) && 
-                (e.children[0].vType != VType.FLOAT || e.children[0].elementType != VType.FLOAT)) {
-                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-            }
-            if (e.children[0].vType != e.children[1].vType) {
-                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-            }
-        }
-        else if (e.tType == TType.OP_AND || e.tType == TType.OP_OR) {
-            if (e.children[0].vType != VType.BOOL) {
-                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-            }
-            if (e.children[0].vType != e.children[1].vType) {
-                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-            }
-        }
-        else if (e.tType == TType.OP_EQUALITY || e.tType == TType.OP_NOTEQUALS) {
-            if (e.children[0].vType != e.children[1].vType) {
-                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-            }
-        }
-        else if (e.tType == TType.OP_ASSIGNMENT) {
-            if (e.children[0].eType != EType.IDENTIFIER || e.children[0].eType != EType.INDEXING) {
-                exceptions.log($"Error (ln: {e.lineNum}): Cannot assign a value to an expression of type {e.children[0].eType}");
-            }
-            if (e.children[0].eType == EType.INDEXING) {
-                if (e.children[0].elementType != e.children[1].vType) {
-                    exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].elementType} and {e.children[1].vType}.");
-                }
-            }
-            if (e.children[0].vType != e.children[1].vType) {
-                exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
-            }
-            if (e.children[0].vType == VType.LIST) {
-                if (e.children[0].elementType != e.children[1].elementType) {
-                    exceptions.log($"Error (ln: {e.lineNum}): Operand Lists contain different types {e.children[0].elementType} and {e.children[1].elementType}");
-                }
-            }
+        if (lHandVType != rHandVType) {
+            exceptions.log($"Error (ln: {e.lineNum}): Type mismatch for operator {e.tType}, {e.children[0].vType} and {e.children[1].vType}.");
         }
     }
 
@@ -280,9 +261,18 @@ public class GScriptTraverser
     }
 
     void traverseFunctionCallExpr(ExprNode e) {
+        //TODO: Handle this case correctly...
+        if (e.parent != null && e.parent.tType == TType.OP_ACCESSOR) { 
+            e.vType = VType.NONE;
+            return; 
+        }
         List<ScopeParam> tempParams = new List<ScopeParam>();
         for (int i = 1; i < e.children.Count; i++) {
-            tempParams.Add(new ScopeParam(e.children[i].value, e.children[i].vType, false));
+            VType t = e.children[i].vType;
+            // If we encounter an indexing expression, use the elementType of 
+            // the list as the type for the parameter.
+            ScopeParam p = new ScopeParam(e.children[i].value, t, false);
+            tempParams.Add(p);
         }
         ScopeFunc tempFunc = new ScopeFunc(e.children[0].value, VType.NONE, tempParams);
         e.vType = VType.NONE;
@@ -306,6 +296,7 @@ public class GScriptTraverser
         if (e.children[1].vType != VType.INT) {
             exceptions.log($"Error (ln: {e.lineNum}): List index must be an int value.");
         }
+        e.vType = context.getVar(e.children[0].value).elementType;
     }
 
     void traverseTypeCastExpr(ExprNode e) {
@@ -342,9 +333,9 @@ public class VarContext {
     }
 
     // Add a variable to the current Scope.
-    public void addVar(string name, VType type) {
+    public void addVar(string name, VType type, VType elementType=VType.NONE) {
         if (!hasVar(name)) {
-            scopes[scopes.Count-1].vars.Add(new ScopeVar(name, type));
+            scopes[scopes.Count-1].vars.Add(new ScopeVar(name, type, elementType));
         }
     }
 
@@ -503,9 +494,10 @@ public class ScopeVar {
     public VType type;
     public VType elementType;   // Used for Lists.
 
-    public ScopeVar(string _name, VType _type) {
+    public ScopeVar(string _name, VType _type, VType _elementType=VType.NONE) {
         name = _name;
         type = _type;
+        elementType = _elementType;
     }
 
     public string ToString() {
