@@ -44,6 +44,10 @@ int b=6%4;
 int c=55%5;
 }
 
+public static void EVENT_NEWEVENTINTERFACETEST() {
+EventInterfaceTest.HAHAHA();
+}
+
 
 }
 

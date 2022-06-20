@@ -181,6 +181,7 @@ public class GScriptTranslator
         string paramStr = "";
         // Skip first child of expr which is the function identifier (i = 1).
         for (int i = 1; i < e.children.Count; i++) {
+            if (e.children[i].vType == VType.NONE) { continue; }
             paramStr += translateExpr(e.children[i]) + ",";
         }
         if (paramStr.Length > 0) { 
@@ -194,7 +195,9 @@ public class GScriptTranslator
             funcName = translateNativeListFunctionCallExpr(e.children[0]);
         }
         else {
-            funcName = $"EventInterface.{translateExpr(e.children[0])}";
+            funcName = translateExpr(e.children[0]);
+            string typeStr = GScriptContextualizer.getContextualizedFunc(funcName).originType.ToString();
+            funcName = $"{typeStr}.{funcName}";
         }
         return $"{funcName}({paramStr})";
     }

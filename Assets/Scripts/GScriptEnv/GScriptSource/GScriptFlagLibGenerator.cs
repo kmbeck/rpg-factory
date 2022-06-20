@@ -42,10 +42,8 @@ public static class GScriptFlagLibrary
 
     // Generate code to define all global flag variables.
     private string genFlagDefCode() {
-        GScriptContextualizer cxtr = new GScriptContextualizer();
-        ScopeVar[] flagVars = cxtr.getContextualizedFlags();
+        List<ScopeVar> flagVars = GScriptContextualizer.generateContextualizedFlags();
         string retval = "";
-        // Generate fake VAR_DEF Statements for each flag.
         foreach (ScopeVar v in flagVars) {
             switch(v.type) {
                 case VType.INT:

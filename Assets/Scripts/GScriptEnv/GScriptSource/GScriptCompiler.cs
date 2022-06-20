@@ -11,8 +11,13 @@ public class GScriptCompiler
     // private VarContext context;
     private GScriptExceptionHandler exceptions;
 
-    public GScriptCompiler() {
-    
+    public GScriptCompiler() {        
+        // Register all contextualized functions and variables.
+        GScriptContextualizer.flush();
+        GScriptContextualizer.registerContextualizedScopeVars<SODB>();
+        GScriptContextualizer.registerContextualizedScopeFuncs<EventInterface>();
+        GScriptContextualizer.registerContextualizedScopeFuncs<EventInterfaceTest>();
+        GScriptContextualizer.registerContextualizedFlags();
     }
 
     // Validate the input string of code.

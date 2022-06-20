@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,7 +28,7 @@ public class GScriptTraverser
         {TType.OP_OR            ,   new List<VType> {VType.BOOL}}
     };
 
-    // Defines what types are allowed to be used in different unary expressions.
+    // TODO: Defines what types are allowed to be used in different unary expressions.
     private static Dictionary<TType, List<VType>> uniaryExprGrammarRules = new Dictionary<TType, List<VType>>() {};
 
     public GScriptTraverser() {
@@ -222,7 +223,6 @@ public class GScriptTraverser
         // TODO: OK to only read for vars here or are there other cases where a list literal could be used?
         VType lHandVType = e.children[0].vType;
         if (lHandVType == VType.LIST) {
-            if (e.children[0].eType == EType.INDEXING) {}
             lHandVType = context.getVar(e.children[0].value).elementType;
         }
         VType rHandVType = e.children[1].vType;
@@ -272,17 +272,20 @@ public class GScriptTraverser
             // If we encounter an indexing expression, use the elementType of 
             // the list as the type for the parameter.
             ScopeParam p = new ScopeParam(e.children[i].value, t, false);
-            tempParams.Add(p);
+            if (p.type != VType.NONE) { tempParams.Add(p); }
         }
-        ScopeFunc tempFunc = new ScopeFunc(e.children[0].value, VType.NONE, tempParams);
+        // TODO: only putting typeof(string) as a placeholder. Does it break anything???
+        ScopeFunc tempFunc = new ScopeFunc(e.children[0].value, VType.NONE, typeof(string), tempParams);
         e.vType = VType.NONE;
         if (!context.hasFunc(tempFunc)) {
             string paramStr = "";
             foreach(ScopeParam p in tempParams) {
                 paramStr += $"{p.type.ToString()},";
             }
-            paramStr = paramStr.Remove(paramStr.Length - 1, 1);
-            exceptions.log($"Error (ln: {e.lineNum}): No function matches definition for {tempFunc.name} ({paramStr}).");
+            if (paramStr.Length > 0) {
+                paramStr = paramStr.Remove(paramStr.Length - 1, 1);
+            }
+            exceptions.log($"Error (ln: {e.lineNum}): No function matches definition for {tempFunc.name}({paramStr}).");
         }
         else {
             e.vType = context.getFunc(tempFunc).returnType;
@@ -391,22 +394,15 @@ public class VarContext {
         return false;
      }
 
-    // Create first 'global' level scope and populate it with references to the
+    // Create first global scope and populate it with references to the
     // SODB libraries.
     private void initGlobalScope() {
+        // Push the global scope.
         pushScope();
-        GScriptContextualizer ctxr = new GScriptContextualizer();
 
-        // Add references to all SODB libs as globals.
-        ScopeVar[] libVars = ctxr.getContextualizedScopeVars<SODB>();
-        foreach (ScopeVar v in libVars) { addVar(v); }
-
-        // Convert all flags to globals of the appropriate type.
-        ScopeVar[] flagVars = ctxr.getContextualizedFlags();
-        foreach (ScopeVar v in flagVars) { addVar(v); }
-
-        ScopeFunc[] funcs = ctxr.getContextualizedScopeFuncs<EventInterface>();
-        foreach (ScopeFunc f in funcs) { addFunc(f); }
+        // Load new contextualized members into the global scope.
+        foreach (ScopeVar v in GScriptContextualizer.getContextualizedVars()) { addVar(v); }
+        foreach (ScopeFunc f in GScriptContextualizer.getContextualizedFuncs()) { addFunc(f); }
     }
 
     public string ToString() {
@@ -454,6 +450,7 @@ public class Scope {
 
     public bool hasFunc(ScopeFunc tgtFunc) {
         foreach (ScopeFunc f in funcs) {
+            Debug.Log($"Scope func {f.name}");
             if (f.isEqual(tgtFunc)) {
                 return true;
             }
@@ -507,18 +504,21 @@ public class ScopeVar {
 
 // A function that is visible in the current scope.
 public class ScopeFunc {
-    public string name;
-    public VType returnType;
-    public List<ScopeParam> parameters;
+    public string name;                     // Name of the function
+    public VType returnType;                // The return type of the function.
+    public Type originType;                 // The originating Type this function belongs to.
+    public List<ScopeParam> parameters;     // List of parameters for the function.
 
-    public ScopeFunc(string _name, VType _returnType, List<ScopeParam> _parameters) {
+    public ScopeFunc(string _name, VType _returnType, Type _originType, List<ScopeParam> _parameters) {
         name = _name;
         returnType = _returnType;
+        originType = _originType;
         parameters = _parameters;
     }
 
     // Only returns true if name & all parameters are the same type in the same order.
     public bool isEqual(ScopeFunc other) {
+        //Debug.Log(this.parameters.Count + ", " + other.parameters.Count);
         if (name == other.name && parameters.Count == other.parameters.Count) {
             for(int i = 0; i < parameters.Count; i++) {
                 if (!parameters[i].isSameType(other.parameters[i])) {

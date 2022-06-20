@@ -19,7 +19,6 @@ public class EventInterface : MonoBehaviour
         }
         else {
             inst = this;
-            //Initialize();
         }
     }
 
@@ -29,14 +28,15 @@ public class EventInterface : MonoBehaviour
         }
         else {
             inst = this;
-            //Initialize();
         }
     }
 
+    [GScript]
     public static void DEBUG_PRINT(string message) {
         Debug.Log(message);
     }
 
+    [GScript]
     public static void EXEC_EVENT(string uniqueID) {
         string methodName = "EVENT_" + uniqueID.ToUpper();
         var m = typeof(GScriptEventLibrary).GetMethod(methodName);

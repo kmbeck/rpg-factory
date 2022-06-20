@@ -10,60 +10,100 @@ using UnityEngine;
  * GScript engine.
  * * * * */
 
-public class GScriptContextualizer
+public static class GScriptContextualizer
 {
-    public GScriptContextualizer() {
-
-    }
+    public static List<ScopeVar> vars = new List<ScopeVar>();
+    public static List<ScopeFunc> funcs = new List<ScopeFunc>();
 
     // Generate a ScopeVar for each field in specified type T.
-    public ScopeVar[] getContextualizedScopeVars<T>(BindingFlags flags=BindingFlags.Public|BindingFlags.Static|BindingFlags.DeclaredOnly) {
+    public static void registerContextualizedScopeVars<T>(BindingFlags flags=BindingFlags.Public|BindingFlags.Static|BindingFlags.DeclaredOnly) {
         FieldInfo[] fields = typeof(T).GetFields(flags);
-        List<ScopeVar> vars = new List<ScopeVar>();
         foreach (FieldInfo f in fields) {
-            vars.Add(new ScopeVar(f.Name.ToUpper(), getTypeAsVType(typeof(T))));
+            if (f.GetCustomAttribute(typeof(GScript)) != null)  {
+                vars.Add(new ScopeVar(f.Name.ToUpper(), getTypeAsVType(typeof(T))));
+            }
         }
-        return vars.ToArray();
     }
 
     // Generate a ScopeFunc for each method in specified type T.
-    public ScopeFunc[] getContextualizedScopeFuncs<T>(BindingFlags flags=BindingFlags.Public|BindingFlags.Static) {
+    public static void registerContextualizedScopeFuncs<T>(BindingFlags flags=BindingFlags.Public|BindingFlags.Static) {
         MethodInfo[] methods = typeof(T).GetMethods(flags);
-        List<ScopeFunc> funcs = new List<ScopeFunc>();
         foreach (MethodInfo m in methods) {
-            List<ScopeParam> parameters = new List<ScopeParam>();
-            foreach(ParameterInfo p in m.GetParameters()) {
-                VType type = getTypeAsVType(p.ParameterType);
-                parameters.Add(new ScopeParam(p.Name, type, !p.HasDefaultValue));
+            if (m.GetCustomAttribute(typeof(GScript)) != null) {
+                List<ScopeParam> parameters = new List<ScopeParam>();
+                foreach(ParameterInfo p in m.GetParameters()) {
+                    Debug.Log(p.Name);
+                    VType type = getTypeAsVType(p.ParameterType);
+                    parameters.Add(new ScopeParam(p.Name, type, !p.HasDefaultValue));
+                }
+                funcs.Add(new ScopeFunc(m.Name, getTypeAsVType(m.ReturnType), typeof(T), parameters));
             }
-            funcs.Add(new ScopeFunc(m.Name, getTypeAsVType(m.ReturnType), parameters));
         }
+    }
+
+    // TODO: Generate native scope functions (list funcs, etc.)
+    //      - how to ensure LH argument is correct type for function call?
+    public static ScopeFunc[] genNativeScopeFuncs() {
+        List<ScopeFunc> funcs = new List<ScopeFunc>();
         return funcs.ToArray();
     }
 
-    public ScopeVar[] getContextualizedFlags() {
-        List<ScopeVar> vars = new List<ScopeVar>();
+    public static void registerContextualizedFlags() {
+        List<ScopeVar> newVars = generateContextualizedFlags();
+        foreach (ScopeVar v in newVars) { vars.Add(v); }
+    }
+
+    public static List<ScopeVar> generateContextualizedFlags() {
+        List<ScopeVar> retval = new List<ScopeVar>();
         foreach (KeyValuePair<string, SOFlag> f in SODB.LIB_FLAG.lib) {
             switch (f.Value.dataType) {
                 case FlagDataType.INT:
-                    vars.Add(new ScopeVar(f.Key, VType.INT));
+                    retval.Add(new ScopeVar(f.Key, VType.INT));
                     break;
                 case FlagDataType.STRING:
-                    vars.Add(new ScopeVar(f.Key, VType.STRING));
+                    retval.Add(new ScopeVar(f.Key, VType.STRING));
                     break;
                 case FlagDataType.BOOL:
-                    vars.Add(new ScopeVar(f.Key, VType.BOOL));
+                    retval.Add(new ScopeVar(f.Key, VType.BOOL));
                     break;
                 case FlagDataType.FLOAT:
-                    vars.Add(new ScopeVar(f.Key, VType.FLOAT));
+                    retval.Add(new ScopeVar(f.Key, VType.FLOAT));
                     break;
             }
         }
+        return retval;
+    }
+
+    public static ScopeVar[] getContextualizedVars() {
         return vars.ToArray();
     }
 
+    public static ScopeVar getContextualizedVar(string name) {
+        foreach (ScopeVar v in vars) {
+            if (v.name == name) { return v; }
+        }
+        return null;
+    }
+
+    public static ScopeFunc[] getContextualizedFuncs() {
+        return funcs.ToArray();
+    }
+
+    public static ScopeFunc getContextualizedFunc(string name) {
+        foreach (ScopeFunc f in funcs) {
+            if (f.name == name) { return f; }
+        }
+        return null;
+    }
+
+    // Reset vars and funcs
+    public static void flush() {
+        vars.Clear();
+        funcs.Clear();
+    }
+
     // Try to translate between a regualar c# type and a VType
-    public VType getTypeAsVType(Type t) {
+    public static VType getTypeAsVType(Type t) {
         if (t == typeof(bool)) {
             return VType.BOOL;
         }
