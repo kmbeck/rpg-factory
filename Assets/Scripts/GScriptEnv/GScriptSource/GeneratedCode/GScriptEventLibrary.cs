@@ -21,20 +21,20 @@ EventInterface.DEBUG_PRINT("After: "+(GScriptFlagLibrary.TestFlag_003).ToString(
 }
 
 public static void EVENT_LISTTEST001() {
-List<string> words=new List<string>() {"hello","this","is","a","test","!"};
-List<int> nums=new List<int>() {0,5,10,15,20,25,30};
-nums.Add(5000);
-words.Add("added");
+GScriptListObjWrapper<string> words=new GScriptListObjWrapper<string>() {"hello","this","is","a","test","!"};
+GScriptListObjWrapper<int> nums=new GScriptListObjWrapper<int>() {0,5,10,15,20,25,30};
+nums.add(5000);
+words.add("added");
 EventInterface.DEBUG_PRINT(words[6]);
 EventInterface.DEBUG_PRINT((nums[3]*50).ToString());
 EventInterface.DEBUG_PRINT((1+2+3+4+5).ToString());
 }
 
 public static void EVENT_LISTTEST002() {
-List<string> words=new List<string>() {"hello","this","is","a","test","!"};
-List<int> nums=new List<int>() {0,5,10,15,20,25,30};
+GScriptListObjWrapper<string> words=new GScriptListObjWrapper<string>() {"hello","this","is","a","test","!"};
+GScriptListObjWrapper<int> nums=new GScriptListObjWrapper<int>() {0,5,10,15,20,25,30};
 EventInterface.DEBUG_PRINT((nums[3]*50).ToString());
-nums.Add(55);
+nums.add(55);
 EventInterface.DEBUG_PRINT((nums[6]).ToString());
 }
 

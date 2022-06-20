@@ -15,6 +15,7 @@ public class GScriptCompiler
         // Register all contextualized functions and variables.
         GScriptContextualizer.flush();
         GScriptContextualizer.registerContextualizedScopeVars<SODB>();
+        GScriptContextualizer.registerNativeScopeFuncs<GScriptListObjWrapper<string>>();
         GScriptContextualizer.registerContextualizedScopeFuncs<EventInterface>();
         GScriptContextualizer.registerContextualizedScopeFuncs<EventInterfaceTest>();
         GScriptContextualizer.registerContextualizedFlags();

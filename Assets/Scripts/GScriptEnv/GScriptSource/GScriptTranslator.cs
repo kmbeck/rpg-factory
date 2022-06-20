@@ -91,9 +91,11 @@ public class GScriptTranslator
 
     string translateVarDefStatement(Statement s) {
         string retval = "";
-        retval += translateVType(s.varDefVType);
         if (s.varDefVType == VType.LIST) {
-            retval += $"<{translateVType(s.expr.children[0].elementType)}>";
+            retval += $"GScriptListObjWrapper<{translateVType(s.expr.children[0].elementType)}>";
+        }
+        else {
+            retval += translateVType(s.varDefVType);
         }
         retval += " ";
         retval += translateExpr(s.expr) + ";\n"; 
@@ -127,8 +129,6 @@ public class GScriptTranslator
                 retval += translateListLiteralExpr(e);
                 break;
             case EType.FUNCTION:
-                // TODO: If function call is not preceeded by an accessor operator, assume it is a EventInterface call
-                //      otherwise, it is a function call on a list (probably???)
                 retval += translateFunctionCallExpr(e);
                 break;
             case EType.INDEXING:
@@ -166,7 +166,7 @@ public class GScriptTranslator
     string translateListLiteralExpr(ExprNode e) {
         string vals = "";
         vals += translateExpr(e.children[0]);
-        return $"new List<{translateVType(e.children[0].vType)}>() {{{vals}}}";
+        return $"new GScriptListObjWrapper<{translateVType(e.children[0].vType)}>() {{{vals}}}";
     }
 
     string translateBinaryExpr(ExprNode e) {
@@ -192,7 +192,9 @@ public class GScriptTranslator
         // an EventInterface function.
         string funcName = "";
         if (e.parent != null && e.parent.tType == TType.OP_ACCESSOR) {
-            funcName = translateNativeListFunctionCallExpr(e.children[0]);
+            funcName = translateExpr(e.children[0]);
+            // TODO: should '.' be a part of the function name expr value?
+            funcName = funcName.Remove(0, 1);
         }
         else {
             funcName = translateExpr(e.children[0]);
@@ -226,8 +228,6 @@ public class GScriptTranslator
     }
 
     string translateTypeCastExpr(ExprNode e) {
-        // TODO: need a lot more cases for different type combinations...?
-        //Debug.Log("Type cast type: " + e.vType.ToString());
         if (e.vType == VType.STRING) {
             return $"({translateExpr(e.children[0])}).ToString()";
         }
@@ -293,7 +293,7 @@ public class GScriptTranslator
             case VType.STRING:
                 return "string";
             case VType.LIST:
-                return "List";
+                return "GScriptListObjWrapper";
             case VType.NONE:
                 return "NONE???";
         }

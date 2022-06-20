@@ -19,7 +19,6 @@ public class GScriptTraverser
         {TType.OP_MODULUS       ,   new List<VType> {VType.FLOAT, VType.INT}},
         {TType.OP_EQUALITY      ,   new List<VType> {VType.BOOL, VType.FLOAT, VType.INT, VType.STRING}},
         {TType.OP_NOTEQUALS     ,   new List<VType> {VType.BOOL, VType.FLOAT, VType.INT, VType.STRING}},
-        //{TType.OP_GREATER       ,   new List<VType> {VType.FLOAT, VType.INT}},
         {TType.OP_LESS          ,   new List<VType> {VType.FLOAT, VType.INT}},
         {TType.OP_LESSOREQUAL   ,   new List<VType> {VType.FLOAT, VType.INT}},
         {TType.OP_GREATER       ,   new List<VType> {VType.FLOAT, VType.INT}},
@@ -230,7 +229,6 @@ public class GScriptTraverser
             rHandVType = context.getVar(e.children[0].value).elementType;
         }
 
-        // TODO: Need any other checks for equality operator???
         if (e.tType != TType.OP_EQUALITY) {
         // TODO: Fix this hacky code and actually check accessor children...?
             if (e.tType == TType.OP_ACCESSOR) { return; }
@@ -247,7 +245,6 @@ public class GScriptTraverser
     }
 
     void traverseUnaryExpr(ExprNode e) {
-        // traverseExpr(e.children[0]);
         if (e.tType == TType.OP_NEGATION) {
             if (e.children[0].vType != VType.BOOL) {
                 exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
@@ -261,9 +258,10 @@ public class GScriptTraverser
     }
 
     void traverseFunctionCallExpr(ExprNode e) {
-        //TODO: Handle this case correctly...
-        if (e.parent != null && e.parent.tType == TType.OP_ACCESSOR) { 
-            e.vType = VType.NONE;
+        //TODO: If this function is preceded by an accessor operator, we need to check
+        //      the l-hand side of the operator to ensure that we are calling a function
+        //      on an appropriate object. Throw error if we are not calling a legal function.
+        if (e.parent != null && e.parent.tType == TType.OP_ACCESSOR) {
             return; 
         }
         List<ScopeParam> tempParams = new List<ScopeParam>();
@@ -275,6 +273,7 @@ public class GScriptTraverser
             if (p.type != VType.NONE) { tempParams.Add(p); }
         }
         // TODO: only putting typeof(string) as a placeholder. Does it break anything???
+        // TODO: always returning VType.NONE with these functions???
         ScopeFunc tempFunc = new ScopeFunc(e.children[0].value, VType.NONE, typeof(string), tempParams);
         e.vType = VType.NONE;
         if (!context.hasFunc(tempFunc)) {

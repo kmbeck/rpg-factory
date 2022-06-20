@@ -267,11 +267,10 @@ public class GScriptTokenizer
             }
             else if (rxString.Match(buf).Success) {                     // STRING LITERAL
                 // Read up until end of current STRING LITERAL.
-                while (inputChars[idx + 1] != '\"') {   // Break out before closing "
+                while (idx + 1 < inputChars.Length && inputChars[idx + 1] != '\"') {   // Break out before closing "
                     idx++;
                     xLoc++;
                     buf += inputChars[idx];
-                    // TODO: throw error if end of input encountered here or wait until later?
                 }
                 // Push closing "
                 // TODO: rule where end of string must be located on the same line?
@@ -285,11 +284,6 @@ public class GScriptTokenizer
             idx++;
             xLoc++;
         }
-        // string temp = "";
-        // foreach (Token t in tokens) {
-        //     temp += t.ToString() + "|";
-        // }
-        // Debug.Log(temp);
         return tokens;
     }
 }

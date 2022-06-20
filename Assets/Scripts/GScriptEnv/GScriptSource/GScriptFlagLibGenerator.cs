@@ -59,9 +59,9 @@ public static class GScriptFlagLibrary
                     retval += $"\tpublic static bool {v.name} = {SODB.LIB_FLAG.lib[v.name].bVal.ToString().ToLower()};\n";
                     break;
                 case VType.LIST:
+                    //TODO: how to define list values as flags???
                     break;
-                    //TODO: Case for lists?
-                    //      - better tabs?          
+                    //retval += $"\tpublic static List<{v.elementType}> = {SODB.LIB_FLAG.lib[v.name]"
             }
         }
         return retval;

@@ -6,8 +6,6 @@ using UnityEngine;
 /* * * * *
  * These are functions that are visible globally within the g-script engine.
  * Add functions to this file as needed...
- *
- * TODO: better way to register functions with EventInterface...
  * * * * */
 public class EventInterface : MonoBehaviour
 {

@@ -41,11 +41,16 @@ public static class GScriptContextualizer
         }
     }
 
-    // TODO: Generate native scope functions (list funcs, etc.)
-    //      - how to ensure LH argument is correct type for function call?
-    public static ScopeFunc[] genNativeScopeFuncs() {
+    public static void registerNativeScopeFuncs<T>(BindingFlags flags=BindingFlags.Public) {
         List<ScopeFunc> funcs = new List<ScopeFunc>();
-        return funcs.ToArray();
+        foreach (MethodInfo m in typeof(T).GetMethods(flags)) {
+            List<ScopeParam> parameters = new List<ScopeParam>();
+            foreach (ParameterInfo p in m.GetParameters()) {
+                VType type = getTypeAsVType(p.ParameterType);
+                parameters.Add(new ScopeParam(p.Name, type, !p.HasDefaultValue));
+            }
+            funcs.Add(new ScopeFunc(m.Name, getTypeAsVType(m.ReturnType), typeof(T), parameters));
+        }
     }
 
     public static void registerContextualizedFlags() {

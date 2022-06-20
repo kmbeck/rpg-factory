@@ -421,7 +421,6 @@ public class GScriptASTParser {
             next = tokens[tokens.Length - 1];
         }
         //Debug.Log($"[[{idx.ToString()}/{tokens.Length-1}]] Type: {cur.type.ToString()}, Val: {cur.value}  ->  Type: {next.type.ToString()}, Val: {next.value}");
-        // TODO: CASE FOR REACHING EOF TO AVOID INFINITE EATING?
     }
 
     // Eats tokens after a statement has ended up until the start of the next
