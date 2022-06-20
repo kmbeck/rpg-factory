@@ -33,7 +33,7 @@ where D : SOOrigin
             string[] splitstr = files[i].Split('/');
             files[i] = splitstr[splitstr.Length - 1].Split('.')[0];
             tgtFiles.Add(files[i]);
-            Debug.Log(files[i]);
+            //Debug.Log(files[i]);
         }
         
         // Generate Objects based on ScriptableObjects

@@ -66,7 +66,7 @@ public class GScriptTokenizer
         List<Token> tokens = new List<Token>();     // Return value.
         string buf = "";
         int idx = 0;
-        int xLoc = 0;   // Line column of token.
+        int xLoc = 0;   // Column of token.
         int yLoc = 1;   // Line number of token.
         while(idx < inputChars.Length) {
             buf += inputChars[idx];
