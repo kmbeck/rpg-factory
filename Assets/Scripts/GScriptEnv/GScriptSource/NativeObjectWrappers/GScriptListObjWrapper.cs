@@ -34,7 +34,7 @@ public class GScriptListObjWrapper<T> : IEnumerable
     }
 
     [GScript]
-    public int len() {
+    public int count() {
         return inst.Count;
     }
 
@@ -70,46 +70,34 @@ public class GScriptListEnumerator<T> : IEnumerator<T>, IDisposable
     // until the first MoveNext() call.
     int position = -1;
 
-    public GScriptListEnumerator(List<T> _items)
-    {
+    public GScriptListEnumerator(List<T> _items) {
         items = _items;
     }
 
-    public bool MoveNext()
-    {
+    public bool MoveNext() {
         position++;
         return (position < items.Count);
     }
 
-    public void Reset()
-    {
+    public void Reset() {
         position = -1;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         Dispose();
         GC.SuppressFinalize(this);
     }
 
-    object IEnumerator.Current
-    {
-        get
-        {
-            return Current;
-        }
+    object IEnumerator.Current {
+        get { return Current; }
     }
 
-    public T Current
-    {
-        get
-        {
-            try
-            {
+    public T Current {
+        get {
+            try {
                 return items[position];
             }
-            catch (IndexOutOfRangeException)
-            {
+            catch (IndexOutOfRangeException) {
                 throw new InvalidOperationException();
             }
         }

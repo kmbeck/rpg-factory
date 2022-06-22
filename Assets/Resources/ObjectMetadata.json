@@ -1,19 +1,4 @@
 {
-    "ItemContainer": {
-        "default_so_type":"SOItem",
-        "default_so_dir":"SOs/Equipment/Containers",
-        "default_prefab_fp":"Prefabs/ContainerPrefab"
-    },
-    "ItemEquipment": {
-        "default_so_type":"SOItem",
-        "default_so_dir":"SOs/Equipment",
-        "default_prefab_fp":"Prefabs/EquipmentPrefab"
-    },
-    "ItemInventory": {
-        "default_so_type":"SOItem",
-        "default_so_dir":"SOs/Items",
-        "default_prefab_fp":"Prefabs/ItemPrefab"
-    },
     "SOEvent": {
         "default_so_type":"SOEvent",
         "default_so_dir":"SOs/Events",

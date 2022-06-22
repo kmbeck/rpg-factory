@@ -14,9 +14,6 @@ public class SODB : MonoBehaviour
     // NOTE: It is NECISSARY to have these variable names start with 'lib'
     //      and be the ONLY variables in this class that start with 'lib'
     //      so the sketchy code reflection will work correctly!!!
-    public static SOLib<SOItem> LIB_ITEM_CONTAINER;
-    public static SOLib<SOItem> LIB_ITEM_EQUIPMENT;
-    public static SOLib<SOItem> LIB_ITEM_INVENTORY;
     public static SOLib<SOEvent> LIB_EVENT;
     public static SOFlagLib<SOFlag> LIB_FLAG;
 
@@ -82,18 +79,6 @@ public class SODB : MonoBehaviour
         LoadObjDataJSON();
 
         //TODO: Dynamically load differet lib types somehow?
-        // * * * * * Item Container * * * * *
-        LIB_ITEM_CONTAINER = new SOLib<SOItem>();
-        LIB_ITEM_CONTAINER.LoadLib(objMetadata["ItemContainer"]["default_so_dir"].ToString());
-        Debug.Log($"Generated {LIB_ITEM_CONTAINER.lib.Count} ItemContainer Objects.");
-        // * * * * * Item Equipment * * * * *
-        LIB_ITEM_EQUIPMENT = new SOLib<SOItem>();
-        LIB_ITEM_EQUIPMENT.LoadLib(objMetadata["ItemEquipment"]["default_so_dir"].ToString());
-        Debug.Log($"Generated {LIB_ITEM_EQUIPMENT.lib.Count} EquipmentPrefab Objects.");
-        // * * * * * Item Inventory * * * * *
-        LIB_ITEM_INVENTORY = new SOLib<SOItem>();
-        LIB_ITEM_INVENTORY.LoadLib(objMetadata["ItemInventory"]["default_so_dir"].ToString());
-        Debug.Log($"Generated {LIB_ITEM_INVENTORY.lib.Count} ItemInventory Objects.");
         // * * * * * Events * * * * *
         LIB_EVENT = new SOLib<SOEvent>();
         LIB_EVENT.LoadLib(objMetadata["SOEvent"]["default_so_dir"].ToString());

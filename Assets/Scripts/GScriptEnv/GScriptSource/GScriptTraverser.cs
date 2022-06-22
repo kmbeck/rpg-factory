@@ -248,7 +248,7 @@ public class GScriptTraverser
     }
 
     void traverseUnaryExpr(ExprNode e) {
-        if (!uniaryExprGrammarRules[e.tType].Contains(e.children[0].value).elementType) {
+        if (!uniaryExprGrammarRules[e.tType].Contains(e.children[0].vType)) {
             exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
         }
     }

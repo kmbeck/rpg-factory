@@ -42,7 +42,6 @@ public class EventEditorGUI : EditorWindow
 
     // Save current editor fields to a scriptable object named <uniqueID>.asset
     public void onSaveClicked() {
-        // TODO: validation will go here before any saving is done...
         SOEvent newEvent =  (SOEvent)SOEvent.CreateInstance(typeof(SOEvent));
         newEvent.uniqueID = root.Q<TextField>("tf_UniqueID").value;
         newEvent.triggerFlagUniqueID = root.Q<TextField>("tf_FlagTrigger").value;
