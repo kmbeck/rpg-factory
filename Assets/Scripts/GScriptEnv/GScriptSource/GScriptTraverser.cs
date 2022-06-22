@@ -28,7 +28,10 @@ public class GScriptTraverser
     };
 
     // TODO: Defines what types are allowed to be used in different unary expressions.
-    private static Dictionary<TType, List<VType>> uniaryExprGrammarRules = new Dictionary<TType, List<VType>>() {};
+    private static Dictionary<TType, List<VType>> uniaryExprGrammarRules = new Dictionary<TType, List<VType>>() {
+        {TType.OP_NEGATION      ,   new List<VType> {VType.BOOL}},
+        {TType.OP_INVERSE       ,   new List<VType> {VType.FLOAT, VType.INT}}
+    };
 
     public GScriptTraverser() {
 
@@ -245,15 +248,8 @@ public class GScriptTraverser
     }
 
     void traverseUnaryExpr(ExprNode e) {
-        if (e.tType == TType.OP_NEGATION) {
-            if (e.children[0].vType != VType.BOOL) {
-                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-            }
-        }
-        else if (e.tType == TType.OP_INVERSE) {
-            if (e.children[0].vType != VType.INT || e.children[0].vType != VType.FLOAT) {
-                exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
-            }
+        if (!uniaryExprGrammarRules[e.tType].Contains(e.children[0].value).elementType) {
+            exceptions.log($"Error (ln: {e.lineNum}): Invalid type for operator {e.tType}, {e.children[0].vType}.");
         }
     }
 
