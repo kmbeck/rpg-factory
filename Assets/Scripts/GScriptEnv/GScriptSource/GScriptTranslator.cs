@@ -193,7 +193,6 @@ public class GScriptTranslator
         string funcName = "";
         if (e.parent != null && e.parent.tType == TType.OP_ACCESSOR) {
             funcName = translateExpr(e.children[0]);
-            // TODO: should '.' be a part of the function name expr value?
             funcName = funcName.Remove(0, 1);
         }
         else {
@@ -202,25 +201,6 @@ public class GScriptTranslator
             funcName = $"{typeStr}.{funcName}";
         }
         return $"{funcName}({paramStr})";
-    }
-
-    // This function handles a special case for translating basic list functions.
-    // list.add(), list.remove(), etc. into valid C# versions.
-    string translateNativeListFunctionCallExpr(ExprNode e) {
-        string funcName = "";
-        // TODO: should '.' be a part of the function name expr value?
-        switch (e.value) {
-            case ".add":
-                funcName = "Add";
-                break;
-            case ".remove":
-                funcName = "RemoveAt";
-                break;
-            case ".clear":
-                funcName = "Clear";
-                break;
-        }
-        return funcName;
     }
 
     string translateIndexingExpr(ExprNode e) {
