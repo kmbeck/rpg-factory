@@ -6,7 +6,7 @@ This project is sort of sleeping until I have a game to work on that can really 
 ```
 MIT License
 
-Copyright (c) 2022, Kyle Beck
+Copyright (c) 2022
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
